@@ -14,9 +14,17 @@
   "author": "Apache Cordova Team",
   "license": "Apache-2.0",
   "dependencies": {
+    "cordova-android": "^13.0.0",
     "jquery": "^3.7.1"
   },
   "devDependencies": {
+    "cordova-browser": "^7.0.0",
     "tailwindcss": "^3.4.4"
+  },
+  "cordova": {
+    "platforms": [
+      "browser",
+      "android"
+    ]
   }
 }

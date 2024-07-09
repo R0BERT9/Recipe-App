@@ -1,0 +1,58 @@
+<div class="w-[90%] m-auto mt-12 gap-5 flex flex-col">
+    <div class="w-[90%] m-auto flex bg-fcs3 p-3 gap-4 rounded-lg">
+        <img src="Public/img/search.svg" alt="">
+        <input type="text" class="bg-fcs3 w-full outline-none" name="" id="" placeholder="Start">
+    </div>
+
+    <div class="flex flex-col gap-3">
+        <h2 class="font-semibold text-xl">Category</h2>
+
+        <div class="overflow-x-auto scrollbar-hidden">
+            <div class="flex gap-4">
+              <button class="bg-fcp3 py-2 px-5 rounded-xl text-fcp1 text-sm font-semibold">All</button>
+              <button class="bg-fcp3 py-2 px-5 rounded-xl text-fcp1 text-sm font-semibold">Vegetarian</button>
+              <button class="bg-fcp3 py-2 px-5 rounded-xl text-fcp1 text-sm font-semibold">Chicken</button>
+              <button class="bg-fcp3 py-2 px-5 rounded-xl text-fcp1 text-sm font-semibold">Desserts</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-col gap-3"> <!--Contenedor Principal-->
+        <h2 class="font-semibold text-lg">Recipes</h2> <!--Recetas-->
+
+        <div class="flex rounded-xl bg-fcp1 p-3 gap-3"> <!--Card de recetas-->
+            <div class="w-[35%]">
+                <img class="rounded-xl object-cover  h-full" src="Public/img/shellfish-pasta-pizza-and-italian-food.jpg" alt="">
+            </div>
+            <div class="flex flex-col gap-2">
+                <p class="font-medium ">Chicken Parmesan Pizza</p> <!--Titulo-->
+
+                <div class="flex justify-between text-sm font-medium"> <!--Cal y Min-->
+                    <p>239 Cal</p>
+                    <div class="flex gap-1">
+                        <img src="/www/Public/img/Clock.svg" alt="">
+                        <p>45 Min</p>
+                    </div>
+                </div>
+
+                <div> <!--Button-->
+                    <button class="text-fcp1 bg-fcp2 rounded-2xl py-2 px-3 text-sm font-semibold">Vegetarian</button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<style>
+    .scrollbar-hidden::-webkit-scrollbar {
+        display: none;  /* Safari and Chrome */
+    }
+
+    .scrollbar-hidden {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+</style>

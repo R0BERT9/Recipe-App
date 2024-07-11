@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="/www/Public/css/tailstyle.css">
 
 <div class="mt-10 w-[90%] m-auto flex flex-col gap-12 ">
-    <button class="flex gap-2"> <!--Botón Back-->
+    <button class="flex gap-2 view-back"> <!--Botón Back-->
         <img src="/www/Public/img/back.svg" alt="">
         <p class="font-medium">Back</p>
     </button>
@@ -37,13 +37,28 @@
 
             <div class="flex flex-col gap-3 items-center"> <!--Botón Sign Up y Log in-->
                 <button class="bg-fcp3 text-white py-3 rounded-md font-semibold text-lg w-full">Sign Up</button>
-                <div class="text-sm font-medium flex gap-2">
-                    <p class="text-fcs2">Don’t have an account? </p>
-                    <button class="text-fcp3">Log In</button>
-                </div>  
             </div>
-
         </form>
+
+        <div class="text-sm font-medium flex gap-2 justify-center">
+            <p class="text-fcs2">Don’t have an account? </p>
+            <button class="text-fcp3 view-sign-up">Sign Up</button>
+        </div>  
     </div>
    
 </div>
+
+
+
+<script>
+
+
+
+document.querySelector('.view-back').addEventListener('click', function() {
+    loadPartialView('home-app', document.querySelector('.init'), false);
+  });
+
+  document.querySelector('.view-sign-up').addEventListener('click', function() {
+    loadPartialView('sign-up', document.querySelector('.init'), false);
+  });
+</script>

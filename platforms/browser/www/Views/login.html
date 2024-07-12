@@ -15,13 +15,13 @@
             <h2 class="text-2xl font-bold text-fcp2">Login</h2>
         </div>
     
-        <form action="" class="flex flex-col gap-5"> <!--Form Sign Up-->
+        <form id="signin-form" action="" class="flex flex-col gap-5"> <!--Form Sign Up-->
         
             <div class="flex flex-col gap-2">  <!--Input Correo-->
                 <p class="font-medium">Email Address</p>
                 <div class="flex items-center gap-3">
                     <img src="/www/Public/img/email.svg" alt="">
-                    <input class="text-sm w-full outline-none bg-fcs1" type="text">
+                    <input class="text-sm w-full outline-none bg-fcs1" id="email" type="email">
                 </div>
                 <div class="w-full border-b border-fcs2"> </div>
             </div>
@@ -30,13 +30,13 @@
                 <p class="font-medium">Password</p>
                 <div class="flex items-center gap-3">
                     <img src="/www/Public/img/password.svg" alt="">
-                    <input class="text-sm w-full outline-none  bg-fcs1" type="text">
+                    <input class="text-sm w-full outline-none  bg-fcs1"  id="password" type="password">
                 </div>
                 <div class="w-full border-b border-fcs2"> </div>
             </div>
 
             <div class="flex flex-col gap-3 items-center"> <!--Botón Sign Up y Log in-->
-                <button class="bg-fcp3 text-white py-3 rounded-md font-semibold text-lg w-full">Sign Up</button>
+                <button class="bg-fcp3 text-white py-3 rounded-md font-semibold text-lg w-full">Log In</button>
             </div>
         </form>
 
@@ -51,8 +51,59 @@
 
 
 <script>
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .then(() => {
+            document.getElementById('signin-form').addEventListener('submit', function(event) {
+                event.preventDefault();
 
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
 
+                if (!email || !password) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Por favor, complete todos los campos',
+                    });
+                    return;
+                }
+
+                auth.signInWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Inicio de Sesión Exitoso',
+                            text: 'Bienvenido de nuevo',
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            loadPartialView('home-recipes', document.querySelector('.init'), false);
+                        });
+                    })
+                    .catch((error) => {
+                        console.error('Error al iniciar sesión:', error);
+                        let errorMessage = 'Error al iniciar sesión: ' + error.message;
+
+                        if (error.code === 'auth/invalid-login-credentials') {
+                            errorMessage = 'Credenciales inválidas. Verifique su correo electrónico y contraseña.';
+                        }
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: errorMessage,
+                        });
+                    });
+            });
+        })
+        .catch((error) => {
+            console.error('Error al configurar la persistencia de la sesión:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Error al configurar la persistencia de la sesión: ' + error.message,
+            });
+        });
 
 document.querySelector('.view-back').addEventListener('click', function() {
     loadPartialView('home-app', document.querySelector('.init'), false);

@@ -1,79 +1,114 @@
 <div class="w-[90%] m-auto mt-12 gap-5 flex flex-col">
     <div class="w-[90%] m-auto flex bg-fcs3 p-3 gap-4 rounded-lg">
-        <img src="Public/img/search.svg" alt="">
-        <input type="text" class="bg-fcs3 w-full outline-none" name="" id="" placeholder="Start">
+      <img src="Public/img/search.svg" alt="">
+      <input type="text" class="bg-fcs3 w-full outline-none" name="" id="" placeholder="Start">
     </div>
 
     <div class="flex flex-col gap-3">
-        <h2 class="font-semibold text-xl">Category</h2>
+      <h2 class="font-semibold text-xl">Category</h2>
 
-        <div class="overflow-x-auto scrollbar-hidden">
-            <div class="flex gap-4">
-              <button class="bg-fcp3 py-2 px-5 rounded-xl text-fcp1 text-sm font-semibold">All</button>
-              <button class="bg-fcp3 py-2 px-5 rounded-xl text-fcp1 text-sm font-semibold">Vegetarian</button>
-              <button class="bg-fcp3 py-2 px-5 rounded-xl text-fcp1 text-sm font-semibold">Chicken</button>
-              <button class="bg-fcp3 py-2 px-5 rounded-xl text-fcp1 text-sm font-semibold">Desserts</button>
-            </div>
+      <div class="overflow-x-auto scrollbar-hidden">
+        <div class="flex gap-4">
+          <button class="bg-fcp3 py-2 px-5 rounded-xl text-fcp1 text-sm font-semibold">All</button>
+          <button class="bg-fcp3 py-2 px-5 rounded-xl text-fcp1 text-sm font-semibold">Vegetarian</button>
+          <button class="bg-fcp3 py-2 px-5 rounded-xl text-fcp1 text-sm font-semibold">Chicken</button>
+          <button class="bg-fcp3 py-2 px-5 rounded-xl text-fcp1 text-sm font-semibold">Desserts</button>
         </div>
+      </div>
     </div>
 
-    <div class="flex flex-col gap-3"> <!--Contenedor Principal-->
-        <h2 class="font-semibold text-lg">Recipes</h2> <!--Recetas-->
+    <div class="flex flex-col gap-3">
+      <h2 class="font-semibold text-lg">Recipes</h2>
 
-        <div class="flex rounded-xl bg-fcp1 p-3 gap-3"> <!--Card de recetas-->
-            <div class="w-[35%]">
-                <img class="rounded-xl object-cover  h-full" src="Public/img/shellfish-pasta-pizza-and-italian-food.jpg" alt="">
-            </div>
-            <div class="flex flex-col gap-2">
-                <p class="font-medium ">Chicken Parmesan Pizza</p> <!--Titulo-->
-
-                <div class="flex justify-between text-sm font-medium"> <!--Cal y Min-->
-                    <p>239 Cal</p>
-                    <div class="flex gap-1">
-                        <img src="/www/Public/img/Clock.svg" alt="">
-                        <p>45 Min</p>
-                    </div>
-                </div>
-
-                <div> <!--Button-->
-                    <button class="text-fcp1 bg-fcp2 rounded-2xl py-2 px-3 text-sm font-semibold">Vegetarian</button>
-                </div>
-
-            </div>
-        </div>
-
-        <div class="flex rounded-xl bg-fcp1 p-3 gap-3"> <!--Card de recetas-->
-            <div class="w-[35%]">
-                <img class="rounded-xl object-cover  h-full" src="Public/img/shellfish-pasta-pizza-and-italian-food.jpg" alt="">
-            </div>
-            <div class="flex flex-col gap-2">
-                <p class="font-medium ">Chicken Parmesan Pizza</p> <!--Titulo-->
-
-                <div class="flex justify-between text-sm font-medium"> <!--Cal y Min-->
-                    <p>239 Cal</p>
-                    <div class="flex gap-1">
-                        <img src="/www/Public/img/Clock.svg" alt="">
-                        <p>45 Min</p>
-                    </div>
-                </div>
-
-                <div> <!--Button-->
-                    <button class="text-fcp1 bg-fcp2 rounded-2xl py-2 px-3 text-sm font-semibold">Vegetarian</button>
-                </div>
-
-            </div>
-        </div>
+      <!-- Contenedor de recetas -->
+      <div class="recipes-container flex flex-col gap-3 mb-24">
+        <!-- Las tarjetas de recetas se insertarán aquí por JavaScript -->
+      </div>
     </div>
-</div>
+  </div>
 
+  <script>
 
-<style>
-    .scrollbar-hidden::-webkit-scrollbar {
-        display: none;  /* Safari and Chrome */
+    function fetchPopularRecipes() {
+      if (allrecipesCache) {
+        displayPopularRecipes(allrecipesCache);
+        return;
+      }
+
+      const query = 'allrecipes'; 
+      const url = `https://api.edamam.com/search?q=${query}&app_id=${appId}&app_key=${appKey}&from=0&to=100`; // Trae hasta 10 recetas para más opciones
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          console.log('Data fetched:', data);
+          allrecipesCache = data.hits; 
+          displayPopularRecipes(allrecipesCache);
+        })
+        .catch(error => console.error('Error fetching recipes:', error));
     }
 
-    .scrollbar-hidden {
-        -ms-overflow-style: none;  /* IE and Edge */
-        scrollbar-width: none;  /* Firefox */
+    function displayPopularRecipes(recipes) {
+      const container = document.querySelector('.recipes-container');
+
+      if (!container) {
+        console.error('Container with class "recipes-container" not found.');
+        return; 
+      }
+
+      container.innerHTML = ''; 
+      recipes.forEach(recipe => {
+        const { label, image, calories, ingredientLines, healthLabels } = recipe.recipe;
+
+        const cardHTML = `
+          <div class="flex rounded-xl bg-fcp1 p-3 gap-3 w-full"> <!--Card de recetas-->
+            <div class="w-[35%]">
+              <img class="rounded-xl object-cover w-full" src="${image}" alt="${label}">
+            </div>
+            <div class="flex flex-col gap-2 w-[75%]">
+              <p class="font-medium">${label}</p> <!--Titulo-->
+
+              <div class="flex justify-between text-sm font-medium"> <!--Cal y Ingredientes-->
+                <p>${Math.round(calories)} Cal</p>
+                <div class="flex gap-1">
+                  <p>${ingredientLines.length} Ingredients</p>
+                </div>
+              </div>
+
+              <div> <!--Botón-->
+                <button class="text-fcp1 bg-fcp2 rounded-2xl py-2 px-3 text-sm font-semibold">${healthLabels[0] || 'Recipe'}</button>
+              </div>
+            </div>
+          </div>
+        `;
+
+        container.innerHTML += cardHTML;
+      });
     }
-</style>
+
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchPopularRecipes();
+    });
+
+    function showPopularRecipesView() {
+      const container = document.querySelector('.recipes-container');
+      if (container) {
+        if (allrecipesCache) {
+          displayPopularRecipes(allrecipesCache);
+        } else {
+          fetchPopularRecipes();
+        }
+      }
+    }
+
+    function switchView(viewName) {
+      if (viewName === 'recipes-container ') {
+        showPopularRecipesView();
+      } else {
+        // Aquí se manejarían otras vistas
+        document.querySelector('.init').innerHTML = '';
+      }
+    }
+
+    switchView('recipes-container ');
+  </script>

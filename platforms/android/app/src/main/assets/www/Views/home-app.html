@@ -11,7 +11,7 @@
 
 <div class="flex flex-col gap-8">
 
-    <div class="flex flex-col gap-2 items-center w-[50%] m-auto">  
+    <div class="flex flex-col gap-2 items-center w-[80%] m-auto">  
         <h2 class="font-bold text-3xl">Start Cooking</h2>
         <div class="text-[#5F5F5F] text-center text-lg font-medium">
             <p class="">Let’s join our community</p>
@@ -20,16 +20,26 @@
     </div>
 
     <div class="flex flex-col items-center gap-3">
-        <button class="py-2 px-14 bg-fcp3 font-semibold rounded-md text-white text-lg">Get Started</button>
+        <button class="py-2 px-14 bg-fcp3 font-semibold rounded-md text-white text-lg view-sign-up">Get Started</button>
         <div class="text-sm font-medium flex gap-2">
             <p class="text-fcs2">Already have an account?</p>
-            <button class="text-fcp3">Log In</button>
+            <button class="text-fcp3 view-sign-in">Log In</button>
         </div>  
     </div>
 
 </div>
-
-
 </div>
 
 
+<script>
+    document.querySelector('.view-sign-up').addEventListener('click',function(){
+        loadPartialView('sign-up',document.querySelector('.init'), false);
+    })
+
+
+    document.querySelector('.view-sign-in').addEventListener('click',function(){
+        loadPartialView('login',document.querySelector('.init'), false);
+    })
+
+    
+</script>

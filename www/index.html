@@ -9,8 +9,8 @@
 </head>
 
 <body class="bg-fcs1">
-    <div id="navBar" class="nav-bar bg-white flex justify-around bottom-0 right-0 fixed w-full py-2 border-t-[1px] border-fcp3"></div>
     <div class="init"></div>
+    <div id="navBar" class="nav-bar bg-white flex justify-around bottom-0 right-0 fixed w-full py-2 border-t-[1px] border-fcp3"></div>
 
     <script src="cordova.js"></script>
     <script src="Public/js/jquery/dist/jquery.min.js"></script>
@@ -24,55 +24,43 @@
     <script src="Public/js/partialview.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    
+    <script src="Public/js/api-recipes.js"></script>
 
     
-
-    <script>
-        loadPartialView('home-app', document.querySelector('.init'), false);
-        
-    </script>   
-
-
-
-
-    <!--Script home-recipes-->
-   
-<!-- 
     <script>
         document.addEventListener('deviceready', onDeviceReady, false);
-
-        function onDeviceReady() {
-            console.log('Device is ready');
-            firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-                .then(() => {
-                    console.log('Session persistence set');
-                    checkAuthState();
-                })
-                .catch((error) => {
-                    console.error('Error setting persistence:', error);
-                });
-        }
-
-        let isUpdatingProfile = false; 
-
-        function checkAuthState() {
-            console.log('Checking auth state...');
-            firebase.auth().onAuthStateChanged((user) => {
-                if (user) {
-                    console.log('User is authenticated:', user);
-                    if (!document.querySelector('.init').innerHTML.includes('home-inventory')) {
-                        loadPartialView('home-vaca', document.querySelector('.init'), true);
-                    }
-                } else {
-                    console.log('No authenticated user');
-                    if (!document.querySelector('.init').innerHTML.includes('home-app')) {
-                        loadPartialView('home-app', document.querySelector('.init'), false);
-                    }
-                }
+    
+    function onDeviceReady() {
+        console.log('Device is ready');
+        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+            .then(() => {
+                console.log('Auth Activado');
+                checkAuthState();
+            })
+            .catch((error) => {
+                console.error('Error setting persistence:', error);
             });
-        }
+    }
 
+
+    function checkAuthState() {
+        console.log('Checking auth state...');
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                console.log('Usuario autenticado:', user);
+                if (!document.querySelector('.init').innerHTML.includes('home-recipes')) {
+                    document.querySelector('.init').innerHTML = '';
+                    loadPartialView('home-recipes', document.querySelector('.init'), true);
+                }
+            } else {
+                console.log('Usuario no autenticado');
+                if (!document.querySelector('.init').innerHTML.includes('home-app')) {
+                    document.querySelector('.init').innerHTML = '';
+                    loadPartialView('home-app', document.querySelector('.init'), false);
+                }
+            }
+        });
+    }
         function hideNavBar() {
             var navBar = document.getElementById("navBar");
             if (navBar) {
@@ -91,8 +79,9 @@
             if (!document.querySelector('.nav-bar').innerHTML.includes('nav-bar content')) {
                 loadPartialView('nav-bar', document.querySelector('.nav-bar'), false);
             }
-        });
+        }); 
     </script>
- -->
+
+
 </body>
 </html>

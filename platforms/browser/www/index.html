@@ -9,8 +9,8 @@
 </head>
 
 <body class="bg-fcs1">
-    <div id="navBar" class="nav-bar bg-white flex justify-around bottom-0 right-0 fixed w-full py-2 border-t-[1px] border-fcp3"></div>
     <div class="init"></div>
+    <div id="navBar" class="nav-bar bg-white flex justify-around bottom-0 right-0 fixed w-full py-2 border-t-[1px] border-fcp3"></div>
 
     <script src="cordova.js"></script>
     <script src="Public/js/jquery/dist/jquery.min.js"></script>
@@ -24,114 +24,43 @@
     <script src="Public/js/partialview.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    
+    <script src="Public/js/api-recipes.js"></script>
 
     
-
-    <script>
-        loadPartialView('home-app', document.querySelector('.init'), false);
-        
-    </script>   
-
-
-
-
-    <!--Script home-recipes-->
-    <script> 
-        const appId = 'da5116f7';
-  const appKey = 'fda5ca53dbeddd8c5680e3c2472334c1';
-  let recipesCache = null; 
-
-  function fetchPopularRecipes() {
-    if (recipesCache) {
-      displayPopularRecipes(recipesCache);
-      return;
-    }
-
-    const query = 'popular'; 
-    const url = `https://api.edamam.com/search?q=${query}&app_id=${appId}&app_key=${appKey}&from=0&to=4`;
-
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        console.log('Data fetched:', data);
-        recipesCache = data.hits; 
-        displayPopularRecipes(recipesCache);
-      })
-      .catch(error => console.error('Error fetching recipes:', error));
-  }
-
-  function displayPopularRecipes(recipes) {
-    const container = document.querySelector('.popular-recipes');
-
-    if (!container) {
-      console.error('Container with class "popular-recipes" not found.');
-      return; 
-    }
-
-    container.innerHTML = ''; 
-    recipes.forEach(recipe => {
-      const { label, image, calories, ingredientLines } = recipe.recipe;
-
-      const cardHTML = `
-        <div class="rounded-xl bg-fcp1 p-3 flex flex-col gap-2">
-          <img class="rounded-xl h-36 object-cover" src="${image}" alt="${label}">
-          <div class="flex flex-col gap-2">
-            <h2 class="text-sm text-center font-medium">${label}</h2>
-            <div class="flex justify-between text-xs font-medium">
-              <p>${Math.round(calories)} Cal</p>
-              <div class="flex gap-1">
-                <p>${ingredientLines.length} Ingredients</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-
-      container.innerHTML += cardHTML;
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    fetchPopularRecipes();
-  });
-    </script>
-
-<!-- 
     <script>
         document.addEventListener('deviceready', onDeviceReady, false);
-
-        function onDeviceReady() {
-            console.log('Device is ready');
-            firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-                .then(() => {
-                    console.log('Session persistence set');
-                    checkAuthState();
-                })
-                .catch((error) => {
-                    console.error('Error setting persistence:', error);
-                });
-        }
-
-        let isUpdatingProfile = false; 
-
-        function checkAuthState() {
-            console.log('Checking auth state...');
-            firebase.auth().onAuthStateChanged((user) => {
-                if (user) {
-                    console.log('User is authenticated:', user);
-                    if (!document.querySelector('.init').innerHTML.includes('home-inventory')) {
-                        loadPartialView('home-vaca', document.querySelector('.init'), true);
-                    }
-                } else {
-                    console.log('No authenticated user');
-                    if (!document.querySelector('.init').innerHTML.includes('home-app')) {
-                        loadPartialView('home-app', document.querySelector('.init'), false);
-                    }
-                }
+    
+    function onDeviceReady() {
+        console.log('Device is ready');
+        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+            .then(() => {
+                console.log('Auth Activado');
+                checkAuthState();
+            })
+            .catch((error) => {
+                console.error('Error setting persistence:', error);
             });
-        }
+    }
 
+
+    function checkAuthState() {
+        console.log('Checking auth state...');
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                console.log('Usuario autenticado:', user);
+                if (!document.querySelector('.init').innerHTML.includes('recipes')) {
+                    document.querySelector('.init').innerHTML = '';
+                    loadPartialView('recipes', document.querySelector('.init'), true);
+                }
+            } else {
+                console.log('Usuario no autenticado');
+                if (!document.querySelector('.init').innerHTML.includes('home-app')) {
+                    document.querySelector('.init').innerHTML = '';
+                    loadPartialView('app', document.querySelector('.init'), false);
+                }
+            }
+        });
+    }
         function hideNavBar() {
             var navBar = document.getElementById("navBar");
             if (navBar) {
@@ -150,8 +79,9 @@
             if (!document.querySelector('.nav-bar').innerHTML.includes('nav-bar content')) {
                 loadPartialView('nav-bar', document.querySelector('.nav-bar'), false);
             }
-        });
+        }); 
     </script>
- -->
+
+
 </body>
 </html>

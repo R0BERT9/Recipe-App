@@ -1,24 +1,39 @@
-<div id="navBar" class="nav-bar bg-white flex justify-around bottom-0 right-0 fixed w-full py-2 border-t-[1px] border-fcp3">
-
-    <button class="flex flex-col justify-center items-center">
+    <button class="flex flex-col justify-center items-center home">
         <img src="/www/Public/img/home.svg" alt="">
         <p class="text-fcs2">Home</p>
     </button>
 
-    <button class="flex flex-col justify-center items-center">
+    <button class="flex flex-col justify-center items-center recipes">
         <img src="/www/Public/img/recipes.svg" alt="">
         <p class="text-fcs2">Recipes</p>
     </button>
 
-    <button class="flex flex-col justify-center items-center">
+    <button class="flex flex-col justify-center items-center favorites">
         <img src="/www/Public/img/My_favorites.svg" alt="">
         <p class="text-fcs2">My Favorites</p>
     </button>
 
-    <button class="flex flex-col justify-center items-center">
+    <button class="flex flex-col justify-center items-center account">
         <img src="/www/Public/img/Account.svg" alt="">
         <p class="text-fcs2">Account</p>
     </button>
 
-   
-</div>
+
+<script>
+    document.querySelector('.home').addEventListener('click', function() {
+    loadPartialView('home-recipes', document.querySelector('.init'), false);
+  });
+
+  document.querySelector('.recipes').addEventListener('click', function() {
+    loadPartialView('recipes', document.querySelector('.init'), false);
+  });
+
+
+  document.querySelector('.favorites').addEventListener('click', function() {
+    loadPartialView('favorites', document.querySelector('.init'), false);
+  });
+
+  document.querySelector('.account').addEventListener('click', function() {
+    loadPartialView('profile', document.querySelector('.init'), false);
+  });
+</script>

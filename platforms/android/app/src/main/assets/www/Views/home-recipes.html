@@ -1,83 +1,111 @@
+<link rel="stylesheet" href="/www/Public/css/tailstyle.css">
+
 <div class="flex flex-col gap-6">
-    <div class="mt-10 w-[90%] m-auto flex flex-col gap-12"> <!--Titulo de bienvenida-->
-        <h2>Hi, <span class="font-bold">Roberto</span> </h2>
+    <div class="mt-10 w-[90%] m-auto flex flex-col gap-12"> <!-- Titulo de bienvenida -->
+        <h2>Hi, <span class="font-bold">Roberto</span></h2>
     </div>
     
-    <div class="w-[85%] rounded-e-full bg-[#FDC82A] p-5 flex flex-col gap-4"> <!--Descripción de bienvenida-->
+    <div class="w-[85%] rounded-e-full bg-[#FDC82A] p-5 flex flex-col gap-4"> <!-- Descripción de bienvenida -->
         <p class="text-lg font-medium">Find your next favorite meals with recipes selected for every taste and occasion</p>
         <div>
             <button class="text-sm bg-fcp1 text-fcp2 font-bold py-1 px-5 rounded-md">Start Now</button>
         </div>
     </div>    
 
-    <div class="w-[90%] m-auto flex flex-col gap-4"> <!--Contenedor general-->
-        <div class="flex justify-between items-center"> <!--Titulo Popular recipes-->
+    <div class="w-[90%] m-auto flex flex-col gap-4 mb-24"> <!-- Contenedor general -->
+        <div class="flex justify-between items-center"> <!-- Titulo Popular recipes -->
             <h2 class="font-semibold text-xl">Popular Recipes</h2>
-            <button class="font-medium text-sm text-fcp3">View More</button>
+            <button class="font-medium text-sm text-fcp3 view-more">View More</button>
         </div>
 
-        <div class="flex flex-col gap-4"> <!--Contenedor de cartas para hacer grid-->
-            <div class="flex gap-4"> <!--Contenedor de tarjetas-->
-                <div class="rounded-xl bg-fcp1 w-[50%] p-3 flex flex-col gap-2">
-                    <img class="rounded-xl h-36 object-cover" src="Public/img/shellfish-pasta-pizza-and-italian-food.jpg" alt="">
-                    <div class="flex flex-col gap-2">
-                        <h2 class="text-sm text-center font-medium">Chicken Parmesan Pizza</h2>
-                        <div class="flex justify-between text-xs font-medium">
-                            <p>239 Cal</p>
-                            <div class="flex gap-1">
-                                <img src="Public/img/Clock.svg" alt="">
-                                <p>45 Min</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                <div class="rounded-xl bg-fcp1 w-[50%] p-3 flex flex-col gap-2">
-                    <img class="rounded-xl h-36 object-cover" src="/www/Public/img/shellfish-pasta-pizza-and-italian-food.jpg" alt="">
-                    <div class="flex flex-col gap-2">
-                        <h2 class="text-sm text-center font-medium">Chicken Parmesan Pizza</h2>
-                        <div class="flex justify-between text-xs font-medium">
-                            <p>239 Cal</p>
-                            <div class="flex gap-1">
-                                <img src="/www/Public/img/Clock.svg" alt="">
-                                <p>45 Min</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>      
-            </div>
-
-            <div class="flex gap-4">
-                <div class="rounded-xl bg-fcp1 w-[50%] p-3 flex flex-col gap-2">
-                    <img class="rounded-xl h-36 object-cover" src="/www/Public/img/shellfish-pasta-pizza-and-italian-food.jpg" alt="">
-                    <div class="flex flex-col gap-2">
-                        <h2 class="text-sm text-center font-medium">Chicken Parmesan Pizza</h2>
-                        <div class="flex justify-between text-xs font-medium">
-                            <p>239 Cal</p>
-                            <div class="flex gap-1">
-                                <img src="/www/Public/img/Clock.svg" alt="">
-                                <p>45 Min</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                <div class="rounded-xl bg-fcp1 w-[50%] p-3 flex flex-col gap-2">
-                    <img class="rounded-xl h-36 object-cover" src="/www/Public/img/shellfish-pasta-pizza-and-italian-food.jpg" alt="">
-                    <div class="flex flex-col gap-2">
-                        <h2 class="text-sm text-center font-medium">Chicken Parmesan Pizza</h2>
-                        <div class="flex justify-between text-xs font-medium">
-                            <p>239 Cal</p>
-                            <div class="flex gap-1">
-                                <img src="/www/Public/img/Clock.svg" alt="">
-                                <p>45 Min</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>      
-            </div>
+        <div class="grid grid-cols-2 gap-4 popular-recipes"> <!-- Contenedor de tarjetas en grid -->
+            <!-- Las tarjetas de recetas se insertarán aquí por JavaScript -->
         </div>
-        
     </div>
-
 </div>
+
+
+
+<script>
+    function fetchPopularRecipes() {
+      if (recipesCache) {
+        displayPopularRecipes(recipesCache);
+        return;
+      }
+
+      const query = 'popular'; 
+      const url = `https://api.edamam.com/search?q=${query}&app_id=${appId}&app_key=${appKey}&from=0&to=4`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          console.log('Data fetched:', data);
+          recipesCache = data.hits; 
+          displayPopularRecipes(recipesCache);
+        })
+        .catch(error => console.error('Error fetching recipes:', error));
+    }
+
+    function displayPopularRecipes(recipes) {
+      const container = document.querySelector('.popular-recipes');
+
+      if (!container) {
+        console.error('Container with class "popular-recipes" not found.');
+        return; 
+      }
+
+      container.innerHTML = ''; 
+      recipes.forEach(recipe => {
+        const { label, image, calories, ingredientLines } = recipe.recipe;
+
+        const cardHTML = `
+          <div class="rounded-xl bg-fcp1 p-3 flex flex-col gap-2">
+            <img class="rounded-xl h-36 object-cover" src="${image}" alt="${label}">
+            <div class="flex flex-col gap-2">
+              <h2 class="text-sm text-center font-medium">${label}</h2>
+              <div class="flex justify-between text-xs font-medium">
+                <p>${Math.round(calories)} Cal</p>
+                <div class="flex gap-1">
+                  <p>${ingredientLines.length} Ingredients</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        container.innerHTML += cardHTML;
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchPopularRecipes();
+    });
+
+    function showPopularRecipesView() {
+      const container = document.querySelector('.popular-recipes');
+      if (container) {
+        if (recipesCache) {
+          displayPopularRecipes(recipesCache);
+        } else {
+          fetchPopularRecipes();
+        }
+      }
+    }
+
+    function switchView(viewName) {
+      const initContainer = document.querySelector('.init');
+
+      if (viewName === 'popular-recipes') {
+        showPopularRecipesView();
+      } else {
+        initContainer.innerHTML = '';
+      }
+    }
+
+    switchView('popular-recipes');
+
+    document.querySelector('.view-more').addEventListener('click',function(){
+        loadPartialView('recipes',document.querySelector('.init'), false);
+    })
+   
+</script>

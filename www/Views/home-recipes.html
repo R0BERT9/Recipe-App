@@ -12,10 +12,10 @@
         </div>
     </div>    
 
-    <div class="w-[90%] m-auto flex flex-col gap-4"> <!-- Contenedor general -->
+    <div class="w-[90%] m-auto flex flex-col gap-4 mb-24"> <!-- Contenedor general -->
         <div class="flex justify-between items-center"> <!-- Titulo Popular recipes -->
             <h2 class="font-semibold text-xl">Popular Recipes</h2>
-            <button class="font-medium text-sm text-fcp3">View More</button>
+            <button class="font-medium text-sm text-fcp3 view-more">View More</button>
         </div>
 
         <div class="grid grid-cols-2 gap-4 popular-recipes"> <!-- Contenedor de tarjetas en grid -->
@@ -25,62 +25,87 @@
 </div>
 
 
-<script> 
-    const appId = 'da5116f7';
-const appKey = 'fda5ca53dbeddd8c5680e3c2472334c1';
-let recipesCache = null; 
 
-function fetchPopularRecipes() {
-if (recipesCache) {
-  displayPopularRecipes(recipesCache);
-  return;
-}
+<script>
+    function fetchPopularRecipes() {
+      if (recipesCache) {
+        displayPopularRecipes(recipesCache);
+        return;
+      }
 
-const query = 'popular'; 
-const url = `https://api.edamam.com/search?q=${query}&app_id=${appId}&app_key=${appKey}&from=0&to=4`;
+      const query = 'popular'; 
+      const url = `https://api.edamam.com/search?q=${query}&app_id=${appId}&app_key=${appKey}&from=0&to=4`;
 
-fetch(url)
-  .then(response => response.json())
-  .then(data => {
-    console.log('Data fetched:', data);
-    recipesCache = data.hits; 
-    displayPopularRecipes(recipesCache);
-  })
-  .catch(error => console.error('Error fetching recipes:', error));
-}
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          console.log('Data fetched:', data);
+          recipesCache = data.hits; 
+          displayPopularRecipes(recipesCache);
+        })
+        .catch(error => console.error('Error fetching recipes:', error));
+    }
 
-function displayPopularRecipes(recipes) {
-const container = document.querySelector('.popular-recipes');
+    function displayPopularRecipes(recipes) {
+      const container = document.querySelector('.popular-recipes');
 
-if (!container) {
-  console.error('Container with class "popular-recipes" not found.');
-  return; 
-}
+      if (!container) {
+        console.error('Container with class "popular-recipes" not found.');
+        return; 
+      }
 
-container.innerHTML = ''; 
-recipes.forEach(recipe => {
-  const { label, image, calories, ingredientLines } = recipe.recipe;
+      container.innerHTML = ''; 
+      recipes.forEach(recipe => {
+        const { label, image, calories, ingredientLines } = recipe.recipe;
 
-  const cardHTML = `
-    <div class="rounded-xl bg-fcp1 p-3 flex flex-col gap-2">
-      <img class="rounded-xl h-36 object-cover" src="${image}" alt="${label}">
-      <div class="flex flex-col gap-2">
-        <h2 class="text-sm text-center font-medium">${label}</h2>
-        <div class="flex justify-between text-xs font-medium">
-          <p>${Math.round(calories)} Cal</p>
-          <div class="flex gap-1">
-            <p>${ingredientLines.length} Ingredients</p>
+        const cardHTML = `
+          <div class="rounded-xl bg-fcp1 p-3 flex flex-col gap-2">
+            <img class="rounded-xl h-36 object-cover" src="${image}" alt="${label}">
+            <div class="flex flex-col gap-2">
+              <h2 class="text-sm text-center font-medium">${label}</h2>
+              <div class="flex justify-between text-xs font-medium">
+                <p>${Math.round(calories)} Cal</p>
+                <div class="flex gap-1">
+                  <p>${ingredientLines.length} Ingredients</p>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    </div>
-  `;
+        `;
 
-  container.innerHTML += cardHTML;
-});
-}
+        container.innerHTML += cardHTML;
+      });
+    }
 
-document.addEventListener('DOMContentLoaded', () => {
-fetchPopularRecipes();
-});
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchPopularRecipes();
+    });
+
+    function showPopularRecipesView() {
+      const container = document.querySelector('.popular-recipes');
+      if (container) {
+        if (recipesCache) {
+          displayPopularRecipes(recipesCache);
+        } else {
+          fetchPopularRecipes();
+        }
+      }
+    }
+
+    function switchView(viewName) {
+      const initContainer = document.querySelector('.init');
+
+      if (viewName === 'popular-recipes') {
+        showPopularRecipesView();
+      } else {
+        initContainer.innerHTML = '';
+      }
+    }
+
+    switchView('popular-recipes');
+
+    document.querySelector('.view-more').addEventListener('click',function(){
+        loadPartialView('recipes',document.querySelector('.init'), false);
+    })
+   
 </script>

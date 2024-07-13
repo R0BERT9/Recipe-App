@@ -28,9 +28,9 @@
 
   <script>
 
-    function fetchPopularRecipes() {
+    function fetchAllRecipes() {
       if (allrecipesCache) {
-        displayPopularRecipes(allrecipesCache);
+        displayAllRecipes(allrecipesCache);
         return;
       }
 
@@ -42,12 +42,12 @@
         .then(data => {
           console.log('Data fetched:', data);
           allrecipesCache = data.hits; 
-          displayPopularRecipes(allrecipesCache);
+          displayAllRecipes(allrecipesCache);
         })
         .catch(error => console.error('Error fetching recipes:', error));
     }
 
-    function displayPopularRecipes(recipes) {
+    function displayAllRecipes(recipes) {
       const container = document.querySelector('.recipes-container');
 
       if (!container) {
@@ -86,23 +86,23 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      fetchPopularRecipes();
+      fetchAlllRecipes();
     });
 
-    function showPopularRecipesView() {
+    function showAllRecipesView() {
       const container = document.querySelector('.recipes-container');
       if (container) {
         if (allrecipesCache) {
-          displayPopularRecipes(allrecipesCache);
+          displayAllRecipes(allrecipesCache);
         } else {
-          fetchPopularRecipes();
+          fetchAllRecipes();
         }
       }
     }
 
     function switchView(viewName) {
       if (viewName === 'recipes-container ') {
-        showPopularRecipesView();
+        showAllRecipesView();
       } else {
         // Aquí se manejarían otras vistas
         document.querySelector('.init').innerHTML = '';

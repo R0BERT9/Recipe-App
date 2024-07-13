@@ -1,13 +1,16 @@
+<link rel="stylesheet" href="/www/Public/css/tailstyle.css">
+<script src="https://kit.fontawesome.com/a203bfa734.js" crossorigin="anonymous"></script>
 <div class="flex flex-col gap-6 ">
     <div class="flex items-center justify-between mt-10 w-[90%] m-auto">
-        <button class="flex gap-2"> <!--Botón Back-->
+        <button class="flex gap-2 "> <!--Botón Back-->
             <img src="/www/Public/img/back.svg" alt="">
-            <p class="font-medium">Back</p>
+            <p class="font-medium ">Back</p>
         </button>
 
-        <button class="w-[10%] ">
-            <img class="text-fcp3" src="/www/Public/img/favorite.png" alt="">
+        <button id="heartButton" class="fa-solid fa-heart text-2xl text-fcs4 w-[10%]">
         </button>
+        
+        
     </div>
 
     <div class="w-full h-60">
@@ -18,12 +21,7 @@
                     <h2 class="font-medium text-xl text-center">Spinach Salad with Blood Oranges</h2>
                     <p class="text-sm">This salad uses blood oranges two ways. First they're juiced for the blood orange-honey vinaigrette and second, the segments sit on a bed of spinach and pistachios.</p>
                 </div>
-
-                <div class="flex items-center">  <!--Tiempo-->
-                    <img src="/www/Public/img/clock-details.svg" alt="">
-                    <span class="text-sm">1 Hour 45 Min</span>
-                </div>
-                
+                    
                 <div class="flex justify-around text-sm">  <!--Tabla de salud-->
                     <div class="flex flex-col items-center">
                         <span class="text-fcs4">Calories</span>
@@ -69,3 +67,9 @@
 </div>   
     
     
+<script>
+    document.getElementById('heartButton').addEventListener('click', function() {
+    this.classList.toggle('text-fcs4');
+    this.classList.toggle('text-fcp3');
+});
+</script>

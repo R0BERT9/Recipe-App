@@ -22,21 +22,21 @@
   </div>
 </div>
 
-  <div class="details-view hidden"> <!-- Vista de detalles -->
+<div class="details-view hidden bg-white"> <!-- Vista de detalles -->
     <div class="flex flex-col gap-6 ">
       <div class="flex items-center justify-between mt-10 w-[90%] m-auto">
         <button class="flex gap-2 back-button"> <!--Botón Back-->
-          <img src="/www/Public/img/back.svg" alt="">
+          <img src="Public/img/back.svg" alt="">
           <p class="font-medium ">Back</p>
         </button>
 
-        <button id="heartButton" class="fa-solid fa-heart text-2xl text-fcs4 w-[10%]"></button>
+        <button id="heartButton" class="fa-solid fa-heart text-2xl  w-[10%] transition-colors duration-200"></button>
       </div>
 
       <div class="w-full h-60">
         <img class="rounded-tl-3xl rounded-tr-3xl w-full h-full object-cover" src="" alt="" id="recipeImage">
-        <div class="bg-white absolute -mt-5 rounded-tl-3xl rounded-tr-3xl w-full">
-          <div class="w-[90%] m-auto py-5 flex flex-col gap-4">
+        <div class="bg-fcs1 absolute -mt-5 rounded-tl-3xl rounded-tr-3xl w-full">
+          <div class="w-[90%] m-auto py-5 flex flex-col gap-4 bg-fcs1">
             <div class="flex flex-col gap-2">  <!--Titulo y descripcion-->
               <h2 class="font-medium text-xl text-center" id="recipeTitle"></h2>
               <p class="text-sm" id="recipeDescription"></p>
@@ -66,11 +66,12 @@
               <ul class="list-disc pl-7 text-sm text-fcs4 font-medium" id="recipeIngredients">
               </ul>
             </div>
+
+            <div id="recipeHealthLabel" class="hidden"></div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 </div>
 
 <script>
@@ -103,7 +104,9 @@
 
     container.innerHTML = ''; 
     recipes.forEach((recipe, index) => {
-      const { label, image, calories, ingredientLines, totalNutrients } = recipe.recipe;
+      const { label, image, calories, ingredientLines, healthLabels } = recipe.recipe;
+
+      const healthLabel = healthLabels[0] || 'Recipe';
 
       const cardHTML = `
         <div class="rounded-xl bg-fcp1 p-3 flex flex-col gap-2 recipe-card" data-index="${index}">
@@ -132,7 +135,7 @@
   }
 
   function showRecipeDetails(recipe) {
-    const { label, image, calories, ingredientLines, totalNutrients } = recipe;
+    const { label, image, calories, ingredientLines, totalNutrients, healthLabels } = recipe;
 
     document.getElementById('recipeImage').src = image;
     document.getElementById('recipeImage').alt = label;
@@ -144,10 +147,15 @@
     document.getElementById('recipeProtein').innerText = Math.round(totalNutrients.PROCNT.quantity) + 'g';
     document.getElementById('recipeIngredients').innerHTML = ingredientLines.map(ingredient => `<li>${ingredient}</li>`).join('');
 
+    document.getElementById('recipeHealthLabel').innerText = healthLabels[0] || 'Recipe';
+
     checkIfRecipeIsFavorite(label);
     
     document.querySelector('.details-view').classList.remove('hidden');
     document.querySelector('.welcome-container').classList.add('hidden');
+
+    hideNavBar(); 
+
   }
 
   function showPopularRecipesView() {
@@ -162,6 +170,8 @@
         fetchPopularRecipes();
       }
     }
+
+    showNavBar();
   }
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -195,41 +205,41 @@
       fat: document.getElementById('recipeFat').innerText,
       carbs: document.getElementById('recipeCarbs').innerText,
       protein: document.getElementById('recipeProtein').innerText,
-      ingredients: Array.from(document.getElementById('recipeIngredients').children).map(li => li.innerText)
+      ingredients: Array.from(document.getElementById('recipeIngredients').children).map(li => li.innerText),
+      healthLabel: document.getElementById('recipeHealthLabel').innerText // Add healthLabel
     };
 
     const user = firebase.auth().currentUser;
     if (user) {
       const favoritesRef = db.collection('users').doc(user.uid).collection('favorites');
-      favoritesRef.where('label', '==', recipe.label).get()      .then(querySnapshot => {
-        if (querySnapshot.empty) {
-          // La receta no está en favoritos, añadirla
-          favoritesRef.add(recipe)
-            .then(() => {
-              console.log('Recipe added to favorites');
-              heartButton.classList.add('text-[#4CAF50]'); 
-              alert('Recipe added to favorites');
-            })
-            .catch(error => {
-              console.error('Error adding recipe to favorites: ', error);
-            });
-        } else {
-          querySnapshot.forEach(doc => {
-            doc.ref.delete()
+      favoritesRef.where('label', '==', recipe.label).get()
+        .then(querySnapshot => {
+          if (querySnapshot.empty) {
+            // La receta no está en favoritos, añadirla
+            favoritesRef.add(recipe)
               .then(() => {
-                console.log('Recipe removed from favorites');
-                heartButton.classList.remove('text-[#4CAF50]'); 
-                alert('Recipe removed from favorites');
+                console.log('Recipe added to favorites');
+                heartButton.classList.add('text-[#4CAF50]'); 
               })
               .catch(error => {
-                console.error('Error removing recipe from favorites: ', error);
+                console.error('Error adding recipe to favorites: ', error);
               });
-          });
-        }
-      })
-      .catch(error => {
-        console.error('Error checking if recipe is in favorites: ', error);
-      });
+          } else {
+            querySnapshot.forEach(doc => {
+              doc.ref.delete()
+                .then(() => {
+                  console.log('Recipe removed from favorites');
+                  heartButton.classList.remove('text-[#4CAF50]'); 
+                })
+                .catch(error => {
+                  console.error('Error removing recipe from favorites: ', error);
+                });
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Error checking if recipe is in favorites: ', error);
+        });
     } else {
       alert('You must be signed in to add favorites');
     }
@@ -255,4 +265,3 @@
   }
 </script>
 
-       

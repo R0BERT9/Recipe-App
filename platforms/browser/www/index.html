@@ -27,8 +27,7 @@
 
     <script src="Public/js/api-recipes.js"></script>
 
-    
-    <script>
+   <script>
         document.addEventListener('deviceready', onDeviceReady, false);
     
     function onDeviceReady() {
@@ -49,9 +48,9 @@
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
                 console.log('Usuario autenticado:', user);
-                if (!document.querySelector('.init').innerHTML.includes('home-recipes')) {
+                if (!document.querySelector('.init').innerHTML.includes('favorites')) {
                     document.querySelector('.init').innerHTML = '';
-                    loadPartialView('home-recipes', document.querySelector('.init'), true);
+                    loadPartialView('favorites', document.querySelector('.init'), true);
                 }
             } else {
                 console.log('Usuario no autenticado');
@@ -81,7 +80,7 @@
                 loadPartialView('nav-bar', document.querySelector('.nav-bar'), false);
             }
         }); 
-    </script>
+    </script> 
 
 
 </body>

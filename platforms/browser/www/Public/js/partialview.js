@@ -34,3 +34,4 @@ function showNavBar() {
     var navBar = document.getElementById("navBar");
     navBar.style.display = "flex";
 }
+

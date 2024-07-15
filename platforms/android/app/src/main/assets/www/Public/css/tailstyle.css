@@ -724,14 +724,6 @@ video {
   height: 100%;
 }
 
-.h-6 {
-  height: 1.5rem;
-}
-
-.w-4 {
-  width: 1rem;
-}
-
 .w-\[10\%\] {
   width: 10%;
 }
@@ -758,14 +750,6 @@ video {
 
 .w-full {
   width: 100%;
-}
-
-.w-6 {
-  width: 1.5rem;
-}
-
-.w-60 {
-  width: 15rem;
 }
 
 .resize {
@@ -897,6 +881,17 @@ video {
   border-color: rgb(186 185 185 / var(--tw-border-opacity));
 }
 
+.border-x-transparent {
+  border-left-color: transparent;
+  border-right-color: transparent;
+}
+
+.border-y-\[\#4CAF50\] {
+  --tw-border-opacity: 1;
+  border-top-color: rgb(76 175 80 / var(--tw-border-opacity));
+  border-bottom-color: rgb(76 175 80 / var(--tw-border-opacity));
+}
+
 .bg-\[\#FDC82A\] {
   --tw-bg-opacity: 1;
   background-color: rgb(253 200 42 / var(--tw-bg-opacity));
@@ -930,11 +925,6 @@ video {
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-
-.bg-green-500 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(34 197 94 / var(--tw-bg-opacity));
 }
 
 .object-cover {
@@ -983,11 +973,6 @@ video {
 .py-5 {
   padding-top: 1.25rem;
   padding-bottom: 1.25rem;
-}
-
-.px-4 {
-  padding-left: 1rem;
-  padding-right: 1rem;
 }
 
 .pl-7 {
@@ -1053,6 +1038,11 @@ video {
   text-transform: lowercase;
 }
 
+.text-\[\#4CAF50\] {
+  --tw-text-opacity: 1;
+  color: rgb(76 175 80 / var(--tw-text-opacity));
+}
+
 .text-\[\#5F5F5F\] {
   --tw-text-opacity: 1;
   color: rgb(95 95 95 / var(--tw-text-opacity));
@@ -1088,26 +1078,6 @@ video {
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
-.text-black {
-  --tw-text-opacity: 1;
-  color: rgb(0 0 0 / var(--tw-text-opacity));
-}
-
-.text-red-500 {
-  --tw-text-opacity: 1;
-  color: rgb(239 68 68 / var(--tw-text-opacity));
-}
-
-.text-gray-400 {
-  --tw-text-opacity: 1;
-  color: rgb(156 163 175 / var(--tw-text-opacity));
-}
-
-.text-fcs3 {
-  --tw-text-opacity: 1;
-  color: rgb(235 235 235 / var(--tw-text-opacity));
-}
-
 .shadow {
   --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
@@ -1140,4 +1110,14 @@ video {
 
 .filter {
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
+.transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.duration-200 {
+  transition-duration: 200ms;
 }

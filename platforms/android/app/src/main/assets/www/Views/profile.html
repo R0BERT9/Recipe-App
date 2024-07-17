@@ -1,0 +1,214 @@
+<link rel="stylesheet" href="/www/Public/css/tailstyle.css">
+<div class="flex flex-col gap-12">
+    <div class="mt-10 w-[90%] m-auto flex gap-5 justify-between">
+        <h2 class="text-xl font-bold">Profile</h2>
+        <button id="logout-button" class="flex flex-col gap-4">
+            <img src="Public/img/logout.svg" alt="">
+        </button>
+    </div>
+
+    <div class="w-[90%] m-auto ">
+    
+        <div class="flex flex-col ">
+            <img class="m-auto" src="Public/img/profiel.svg" alt="">
+            <span id="username-span" class="text-lg m-auto font-semibold"></span>
+        </div>
+    
+        <form id="update-form" action="" class="flex flex-col gap-6"> <!-- Form Update -->
+            
+            <div class="flex flex-col gap-2">  <!-- Input User -->
+                <p class="font-medium">User</p>
+                <div class="flex items-center gap-3">
+                    <img src="Public/img/user.svg" alt="">
+                    <input class="text-sm w-full outline-none bg-fcs1" id="user" type="text"  onclick="hideNavBar()">
+                </div>
+                <div class="w-full border-b border-fcs2"> </div>
+            </div>
+    
+            <div class="flex flex-col gap-2">  <!-- Input Current Password -->
+                <p class="font-medium">Current Password</p>
+                <div class="flex items-center gap-3">
+                    <img src="Public/img/password.svg" alt="">
+                    <input class="text-sm w-full outline-none bg-fcs1" id="current-password" type="password" onclick="hideNavBar()">
+                </div>
+                <div class="w-full border-b border-fcs2"> </div>
+            </div>
+    
+            <div class="flex flex-col gap-2">  <!-- Input New Password -->
+                <p class="font-medium">New Password</p>
+                <div class="flex items-center gap-3">
+                    <img src="Public/img/password.svg" alt="">
+                    <input class="text-sm w-full outline-none bg-fcs1" id="new-password" type="password" onclick="hideNavBar()">
+                </div>
+                <div class="w-full border-b border-fcs2"> </div>
+            </div>
+    
+            <div class="flex flex-col gap-3 items-center"> <!-- Button -->
+                <button id="save-button" class="bg-fcp3 text-white py-3 rounded-md font-semibold text-lg w-full">Save And Continue</button>
+            </div>
+        </form>
+    
+    </div>
+</div>
+
+<script>
+    auth.onAuthStateChanged(async user => {
+        if (user) {
+            console.log('User is signed in:', user);
+            const userRef = db.collection('users').doc(user.uid);
+            try {
+                const doc = await userRef.get();
+                if (doc.exists) {
+                    const userData = doc.data();
+                    const usernameSpan = document.getElementById('username-span');
+                    const userInput = document.getElementById('user');
+                    
+                    if (usernameSpan && userInput) {
+                        usernameSpan.innerText = userData.fullName;
+                        userInput.value = userData.fullName;
+                    } else {
+                        console.error('User span or input element not found.');
+                    }
+                } else {
+                    console.log('No such document!');
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        } else {
+            console.log('No user is signed in.');
+        }
+    });
+
+    document.getElementById('save-button').addEventListener('click', async (event) => {
+        event.preventDefault();
+        
+        const currentPassword = document.getElementById('current-password').value;
+        const newPassword = document.getElementById('new-password').value;
+        const newUsername = document.getElementById('user').value;
+
+        const user = auth.currentUser;
+
+        let passwordUpdate = false;
+        let usernameUpdate = false;
+
+        try {
+            if (currentPassword || newPassword) {
+                if (currentPassword) {
+                    const credential = firebase.auth.EmailAuthProvider.credential(user.email, currentPassword);
+                    await user.reauthenticateWithCredential(credential);
+                }
+
+                if (newPassword) {
+                    await user.updatePassword(newPassword);
+                    passwordUpdate = true;
+                }
+            }
+
+            if (newUsername && currentPassword && !newPassword) {
+                const userRef = db.collection('users').doc(user.uid);
+                await userRef.update({ fullName: newUsername });
+                usernameUpdate = true;
+
+                const usernameSpan = document.getElementById('username-span');
+                if (usernameSpan) {
+                    usernameSpan.innerText = newUsername;
+                } else {
+                    console.error('Username span element not found.');
+                }
+            }
+
+            if (passwordUpdate) {
+                await Swal.fire({
+                    title: 'Success!',
+                    text: 'Password updated successfully.',
+                    icon: 'success',
+                    iconColor: '#FFC107',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#4CAF50',
+                    width: '300px',
+                    customClass: {
+                        title: 'text-xl',
+                        text: 'text-md',
+                    },
+                });
+            }
+            if (usernameUpdate) {
+                await Swal.fire({
+                    title: 'Success!',
+                    text: 'Username updated successfully.',
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    width: '300px',
+                });
+            }
+            if (!passwordUpdate && !usernameUpdate) {
+                await Swal.fire({
+                    title: 'No Changes!',
+                    text: 'No changes were made to your profile.',
+                    icon: 'info',
+                    iconColor:'#FFC107',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#4CAF50',
+                    width: '300px',
+                    padding: '16px',
+                    customClass: {
+                        title: 'text-xl',
+                        text: 'text-md',
+                    },
+                });
+            }
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            await Swal.fire({
+                title: 'Error!',
+                text: 'Error updating profile: ' + error.message,
+                icon: 'error',
+                confirmButtonText: 'OK',
+                width: '300px',
+            });
+        }
+    });
+
+    function clearViewContent() {
+        const contentContainer = document.querySelector('.init');
+        contentContainer.innerHTML = '';
+    }
+
+    document.getElementById('logout-button').addEventListener('click', async () => {
+        try {
+            const result = await Swal.fire({
+                title: 'Confirm Logout',
+                text: 'Are you sure you want to log out?',
+                icon: 'warning',
+                iconColor :'#FFC107',
+                padding:'16px',
+                showCancelButton: true,
+                confirmButtonColor: '#FFC107',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, log out',
+                cancelButtonText: 'Cancel',
+                width: '300px',
+                customClass: {
+                    title: 'text-xl',
+                    text: 'text-md',
+                },
+            });
+
+            if (result.isConfirmed) {
+                await auth.signOut();
+                clearViewContent(); // Clear current view content before loading new view
+                loadPartialView('home-app', document.querySelector('.init'), true);
+            }
+        } catch (error) {
+            console.error('Error signing out:', error);
+            await Swal.fire({
+                title: 'Error!',
+                text: 'Error signing out: ' + error.message,
+                icon: 'error',
+                confirmButtonText: 'OK',
+                width: '300px',
+            });
+        }
+    });
+</script>

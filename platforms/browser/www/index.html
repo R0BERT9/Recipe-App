@@ -48,9 +48,9 @@
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
                 console.log('Usuario autenticado:', user);
-                if (!document.querySelector('.init').innerHTML.includes('favorites')) {
+                if (!document.querySelector('.init').innerHTML.includes('home-recipes')) {
                     document.querySelector('.init').innerHTML = '';
-                    loadPartialView('favorites', document.querySelector('.init'), true);
+                    loadPartialView('home-recipes', document.querySelector('.init'), true);
                 }
             } else {
                 console.log('Usuario no autenticado');

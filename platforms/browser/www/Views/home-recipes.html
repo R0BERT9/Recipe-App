@@ -22,7 +22,7 @@
   </div>
 </div>
 
-<div class="details-view hidden bg-white"> <!-- Vista de detalles -->
+<div class="details-view hidden bg-white mb-5"> <!-- Vista de detalles -->
     <div class="flex flex-col gap-6 ">
       <div class="flex items-center justify-between mt-10 w-[90%] m-auto">
         <button class="flex gap-2 back-button"> <!--Botón Back-->
@@ -106,7 +106,6 @@
     recipes.forEach((recipe, index) => {
       const { label, image, calories, ingredientLines, healthLabels } = recipe.recipe;
 
-      // Get the first health label or default to 'Recipe'
       const healthLabel = healthLabels[0] || 'Recipe';
 
       const cardHTML = `
@@ -148,7 +147,6 @@
     document.getElementById('recipeProtein').innerText = Math.round(totalNutrients.PROCNT.quantity) + 'g';
     document.getElementById('recipeIngredients').innerHTML = ingredientLines.map(ingredient => `<li>${ingredient}</li>`).join('');
 
-    // Display healthLabels[0] in details view
     document.getElementById('recipeHealthLabel').innerText = healthLabels[0] || 'Recipe';
 
     checkIfRecipeIsFavorite(label);
@@ -156,7 +154,7 @@
     document.querySelector('.details-view').classList.remove('hidden');
     document.querySelector('.welcome-container').classList.add('hidden');
 
-    hideNavBar(); // Ocultar el NavBar al mostrar la vista de detalles
+    hideNavBar(); 
 
   }
 

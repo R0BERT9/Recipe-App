@@ -1,8 +1,60 @@
 <div class="mt-10 w-[90%] m-auto flex flex-col gap-5">
     <h2 class="text-xl font-bold">Favorites</h2>
-    <div id="favorites-container" class="flex flex-col gap-4">
+    <div id="favorites-container" class="flex flex-col gap-4 mb-20">
 
     </div>
+</div>
+
+<div class="details-view hidden bg-white mb-5"> <!-- Vista de detalles -->
+  <div class="flex flex-col gap-6 ">
+    <div class="flex items-center justify-between mt-10 w-[90%] m-auto">
+      <button class="flex gap-2 back-button"> <!--Botón Back-->
+        <img src="Public/img/back.svg" alt="">
+        <p class="font-medium ">Back</p>
+      </button>
+
+      <button id="heartButton" class="fa-solid fa-heart text-2xl w-[10%] transition-colors duration-200"></button>
+    </div>
+
+    <div class="w-full h-60">
+      <img class="rounded-tl-3xl rounded-tr-3xl w-full h-full object-cover" src="" alt="" id="recipeImage">
+      <div class="bg-fcs1 absolute -mt-5 rounded-tl-3xl rounded-tr-3xl w-full">
+        <div class="w-[90%] m-auto py-5 flex flex-col gap-4 bg-fcs1">
+          <div class="flex flex-col gap-2">  <!--Titulo y descripcion-->
+            <h2 class="font-medium text-xl text-center" id="recipeTitle"></h2>
+            <p class="text-sm" id="recipeDescription"></p>
+          </div>
+              
+          <div class="flex justify-around text-sm">  <!--Tabla de salud-->
+            <div class="flex flex-col items-center">
+              <span class="text-fcs4">Calories</span>
+              <span id="recipeCalories"></span>
+            </div>
+            <div class="flex flex-col items-center">
+              <span class="text-fcs4">Fat</span>
+              <span id="recipeFat"></span>
+            </div>
+            <div class="flex flex-col items-center">
+              <span class="text-fcs4">Carbs</span>
+              <span id="recipeCarbs"></span>
+            </div>
+            <div class="flex flex-col items-center">
+              <span class="text-fcs4">Protein</span>
+              <span id="recipeProtein"></span>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2">  <!--Ingredientes-->
+            <h2 class="font-medium text-lg">Ingredients</h2>
+            <ul class="list-disc pl-7 text-sm text-fcs4 font-medium" id="recipeIngredients">
+            </ul>
+          </div>
+
+          <div id="recipeHealthLabel" class="hidden"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -83,7 +135,6 @@
         try {
             await favoritesRef.doc(recipeId).delete();
             console.log('Recipe removed from favorites');
-            // Refresh the favorites list
             fetchFavorites();
         } catch (error) {
             console.error('Error removing recipe from favorites:', error);

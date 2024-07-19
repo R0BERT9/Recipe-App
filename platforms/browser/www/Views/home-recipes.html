@@ -215,7 +215,6 @@
       favoritesRef.where('label', '==', recipe.label).get()
         .then(querySnapshot => {
           if (querySnapshot.empty) {
-            // La receta no está en favoritos, añadirla
             favoritesRef.add(recipe)
               .then(() => {
                 console.log('Recipe added to favorites');

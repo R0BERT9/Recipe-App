@@ -1,154 +1,222 @@
-<div class="mt-10 w-[90%] m-auto flex flex-col gap-5">
-    <h2 class="text-xl font-bold">Favorites</h2>
-    <div id="favorites-container" class="flex flex-col gap-4 mb-20">
-
-    </div>
+<div class="mt-10 w-[90%] m-auto flex flex-col gap-5 favorites-container">
+  <h2 class="text-xl font-bold">Favorites</h2>
+  <div id="favorites-container" class="flex flex-col gap-4 mb-20">
+      <!-- Las tarjetas de recetas se llenarán aquí -->
+  </div>
 </div>
 
 <div class="details-view hidden bg-white mb-5"> <!-- Vista de detalles -->
-  <div class="flex flex-col gap-6 ">
-    <div class="flex items-center justify-between mt-10 w-[90%] m-auto">
-      <button class="flex gap-2 back-button"> <!--Botón Back-->
-        <img src="Public/img/back.svg" alt="">
-        <p class="font-medium ">Back</p>
-      </button>
-
-      <button id="heartButton" class="fa-solid fa-heart text-2xl w-[10%] transition-colors duration-200"></button>
-    </div>
-
-    <div class="w-full h-60">
-      <img class="rounded-tl-3xl rounded-tr-3xl w-full h-full object-cover" src="" alt="" id="recipeImage">
-      <div class="bg-fcs1 absolute -mt-5 rounded-tl-3xl rounded-tr-3xl w-full">
-        <div class="w-[90%] m-auto py-5 flex flex-col gap-4 bg-fcs1">
-          <div class="flex flex-col gap-2">  <!--Titulo y descripcion-->
-            <h2 class="font-medium text-xl text-center" id="recipeTitle"></h2>
-            <p class="text-sm" id="recipeDescription"></p>
-          </div>
-              
-          <div class="flex justify-around text-sm">  <!--Tabla de salud-->
-            <div class="flex flex-col items-center">
-              <span class="text-fcs4">Calories</span>
-              <span id="recipeCalories"></span>
-            </div>
-            <div class="flex flex-col items-center">
-              <span class="text-fcs4">Fat</span>
-              <span id="recipeFat"></span>
-            </div>
-            <div class="flex flex-col items-center">
-              <span class="text-fcs4">Carbs</span>
-              <span id="recipeCarbs"></span>
-            </div>
-            <div class="flex flex-col items-center">
-              <span class="text-fcs4">Protein</span>
-              <span id="recipeProtein"></span>
-            </div>
-          </div>
-
-          <div class="flex flex-col gap-2">  <!--Ingredientes-->
-            <h2 class="font-medium text-lg">Ingredients</h2>
-            <ul class="list-disc pl-7 text-sm text-fcs4 font-medium" id="recipeIngredients">
-            </ul>
-          </div>
-
-          <div id="recipeHealthLabel" class="hidden"></div>
-        </div>
+  <div class="flex flex-col gap-6">
+      <div class="flex items-center justify-between mt-10 w-[90%] m-auto">
+          <button class="flex gap-2 back-button"> <!-- Botón Back -->
+              <img src="Public/img/back.svg" alt="">
+              <p class="font-medium">Back</p>
+          </button>
       </div>
-    </div>
+      <div class="w-full h-60">
+          <img class="rounded-tl-3xl rounded-tr-3xl w-full h-full object-cover" src="" alt="" id="recipeImage">
+          <div class="bg-fcs1 absolute -mt-5 rounded-tl-3xl rounded-tr-3xl w-full">
+              <div class="w-[90%] m-auto py-5 flex flex-col gap-4 bg-fcs1">
+                  <div class="flex flex-col gap-2">  <!-- Título y descripción -->
+                      <h2 class="font-medium text-xl text-center" id="recipeTitle"></h2>
+                      <p class="text-sm" id="recipeDescription"></p>
+                  </div>
+                  <div class="flex justify-around text-sm">  <!-- Tabla de salud -->
+                      <div class="flex flex-col items-center">
+                          <span class="text-fcs4">Calories</span>
+                          <span id="recipeCalories"></span>
+                      </div>
+                      <div class="flex flex-col items-center">
+                          <span class="text-fcs4">Fat</span>
+                          <span id="recipeFat"></span>
+                      </div>
+                      <div class="flex flex-col items-center">
+                          <span class="text-fcs4">Carbs</span>
+                          <span id="recipeCarbs"></span>
+                      </div>
+                      <div class="flex flex-col items-center">
+                          <span class="text-fcs4">Protein</span>
+                          <span id="recipeProtein"></span>
+                      </div>
+                  </div>
+                  <div class="flex flex-col gap-2">  <!-- Ingredientes -->
+                      <h2 class="font-medium text-lg">Ingredients</h2>
+                      <ul class="list-disc pl-7 text-sm text-fcs4 font-medium" id="recipeIngredients">
+                      </ul>
+                  </div>
+                  <div id="recipeHealthLabel" class="hidden"></div>
+              </div>
+          </div>
+      </div>
   </div>
 </div>
 
 <script>
-    async function fetchFavorites() {
-        const user = auth.currentUser;
-        if (!user) {
-            console.log('User is not authenticated.');
-            document.getElementById('favorites-container').innerHTML = '<p>You need to be signed in to see your favorites.</p>';
-            return;
-        }
+  // Función para mostrar los detalles de la receta
+  async function showRecipeDetails(recipeId) {
+      const user = auth.currentUser;
+      if (!user) {
+          console.log('User is not authenticated.');
+          return;
+      }
 
-        const favoritesRef = db.collection('users').doc(user.uid).collection('favorites');
-        try {
-            const snapshot = await favoritesRef.get();
-            const container = document.getElementById('favorites-container');
-            if (snapshot.empty) {
-                console.log('No favorite recipes found.');
-                container.innerHTML = '<p>No favorites found.</p>';
-                return;
-            }
+      const favoritesRef = db.collection('users').doc(user.uid).collection('favorites');
+      try {
+          const doc = await favoritesRef.doc(recipeId).get();
+          if (!doc.exists) {
+              console.log('No such document!');
+              return;
+          }
 
-            container.innerHTML = '';
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const { label, image, calories, ingredients, healthLabel } = data;
-                const ingredientsCount = ingredients ? ingredients.length : 0;
-                const healthLabels = healthLabel ? healthLabel : 'No Label'; 
-                const calorieText = calories ? `${calories} Cal` : 'No Calories';
+          const recipe = doc.data();
+          const {
+              label,
+              image,
+              calories,
+              ingredients,
+              healthLabel,
+              description = '',
+              fat = 'N/A',
+              carbs = 'N/A',
+              protein = 'N/A'
+          } = recipe;
 
-                const cardHTML = `
-                    <div class="flex rounded-xl bg-fcp1 p-3 gap-2 w-full">
-                        <div class="w-[35%]">
-                            <img class="rounded-xl object-cover h-full" src="${image}" alt="${label}">
-                        </div>
-                        <div class="flex flex-col gap-1 w-[75%]">
-                            <div class="flex justify-between items-center gap-4 w-full">
-                                <p class="font-medium w-[75%]">${label}</p>
-                                <button class="remove-favorite" data-id="${doc.id}">
-                                    <img class="w-fit" src="Public/img/favorite.svg" alt="">
-                                </button>
-                            </div>
-                            <div class="flex justify-between text-sm font-medium">
-                                <p>${calorieText}</p>
-                                <div class="flex gap-1">
-                                    <p>${ingredientsCount} Ingredients</p>
-                                </div>
-                            </div>
-                            <div>
-                                <button class="text-fcp1 bg-fcp2 rounded-2xl py-2 px-3 text-sm font-semibold">${healthLabels}</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
+          document.getElementById('recipeImage').src = image;
+          document.getElementById('recipeImage').alt = label;
+          document.getElementById('recipeTitle').innerText = label;
+          document.getElementById('recipeDescription').innerText = description;
+          document.getElementById('recipeCalories').innerText = calories ? Math.round(calories) + ' kcal' : 'N/A';
 
-                container.innerHTML += cardHTML;
-            });
+          document.getElementById('recipeFat').innerText = fat || 'N/A';
+          document.getElementById('recipeCarbs').innerText = carbs || 'N/A';
+          document.getElementById('recipeProtein').innerText = protein || 'N/A';
 
-            document.querySelectorAll('.remove-favorite').forEach(button => {
-                button.addEventListener('click', async function() {
-                    const recipeId = this.getAttribute('data-id');
-                    await removeFavorite(recipeId);
-                });
-            });
+          document.getElementById('recipeIngredients').innerHTML = ingredients && ingredients.length > 0 
+              ? ingredients.map(ingredient => `<li>${ingredient}</li>`).join('') 
+              : 'No ingredients available';
 
-        } catch (error) {
-            console.error('Error fetching favorite recipes:', error);
-        }
-    }
+          document.getElementById('recipeHealthLabel').innerText = healthLabel || 'No health label';
 
-    async function removeFavorite(recipeId) {
-        const user = auth.currentUser;
-        if (!user) {
-            console.log('User is not authenticated.');
-            return;
-        }
+          document.querySelector('.details-view').classList.remove('hidden');
+          document.querySelector('.favorites-container').classList.add('hidden');
+          hideNavBar(); 
 
-        const favoritesRef = db.collection('users').doc(user.uid).collection('favorites');
-        try {
-            await favoritesRef.doc(recipeId).delete();
-            console.log('Recipe removed from favorites');
-            // Refresh the favorites list
-            fetchFavorites();
-        } catch (error) {
-            console.error('Error removing recipe from favorites:', error);
-        }
-    }
+      } catch (error) {
+          console.error('Error fetching recipe details:', error);
+      }
 
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            console.log('User is signed in:', user);
-            fetchFavorites();
-        } else {
-            console.log('No user is signed in.');
-            document.getElementById('favorites-container').innerHTML = '<p>You need to be signed in to see your favorites.</p>';
-        }
-    });
+  }
+
+  document.getElementById('favorites-container').addEventListener('click', function(event) {
+      const target = event.target.closest('[data-id]');
+      if (target) {
+          const recipeId = target.getAttribute('data-id');
+          showRecipeDetails(recipeId);
+      } else if (event.target.closest('.remove-favorite')) {
+          const recipeId = event.target.closest('.remove-favorite').getAttribute('data-id');
+          removeFavorite(recipeId);
+      }
+  });
+
+  document.querySelector('.back-button').addEventListener('click', function() {
+      document.querySelector('.details-view').classList.add('hidden');
+      document.querySelector('.favorites-container').classList.remove('hidden');
+      showNavBar();
+  });
+
+  async function fetchFavorites() {
+      const user = auth.currentUser;
+      if (!user) {
+          console.log('User is not authenticated.');
+          document.getElementById('favorites-container').innerHTML = '<p>You need to be signed in to see your favorites.</p>';
+          return;
+      }
+
+      const favoritesRef = db.collection('users').doc(user.uid).collection('favorites');
+      try {
+          const snapshot = await favoritesRef.get();
+          const container = document.getElementById('favorites-container');
+          if (snapshot.empty) {
+              console.log('No favorite recipes found.');
+              container.innerHTML = '<p>No favorites found.</p>';
+              return;
+          }
+
+          container.innerHTML = '';
+          snapshot.forEach(doc => {
+              const data = doc.data();
+              const { label, image, calories, ingredients, healthLabel } = data;
+              const ingredientsCount = ingredients ? ingredients.length : 0;
+              const healthLabels = healthLabel ? healthLabel : 'No Label'; 
+              const calorieText = calories ? `${calories} Cal` : 'No Calories';
+
+              const cardHTML = `
+              <div class="flex rounded-xl bg-fcp1 p-3 gap-2 w-full" data-id="${doc.id}">
+                  <div class="w-[35%]">
+                      <img class="rounded-xl object-cover h-full" src="${image}" alt="${label}">
+                  </div>
+                  <div class="flex flex-col gap-1 w-[75%]">
+                      <div class="flex justify-between items-center gap-4 w-full">
+                          <p class="font-medium w-[75%]">${label}</p>
+                          <button class="remove-favorite" data-id="${doc.id}">
+                              <img class="w-fit" src="Public/img/favorite.svg" alt="">
+                          </button>
+                      </div>
+                      <div class="flex justify-between text-sm font-medium">
+                          <p>${calorieText}</p>
+                          <div class="flex gap-1">
+                              <p>${ingredientsCount} Ingredients</p>
+                          </div>
+                      </div>
+                      <div>
+                          <button class="text-fcp1 bg-fcp2 rounded-2xl py-2 px-3 text-sm font-semibold">${healthLabels}</button>
+                      </div>
+                  </div>
+              </div>
+          `;
+
+          container.innerHTML += cardHTML;
+          showNavBar();
+
+      });
+
+      document.querySelectorAll('.remove-favorite').forEach(button => {
+          button.addEventListener('click', async function(event) {
+              event.stopPropagation(); 
+              const recipeId = this.getAttribute('data-id');
+              await removeFavorite(recipeId);
+          });
+      });
+
+  } catch (error) {
+      console.error('Error fetching favorite recipes:', error);
+  }
+  }
+
+  async function removeFavorite(recipeId) {
+      const user = auth.currentUser;
+      if (!user) {
+          console.log('User is not authenticated.');
+          return;
+      }
+
+      const favoritesRef = db.collection('users').doc(user.uid).collection('favorites');
+      try {
+          await favoritesRef.doc(recipeId).delete();
+          console.log('Recipe removed from favorites');
+          fetchFavorites(); 
+      } catch (error) {
+          console.error('Error removing recipe from favorites:', error);
+      }
+  }
+
+  auth.onAuthStateChanged(user => {
+      if (user) {
+          console.log('User is signed in:', user.email);
+          fetchFavorites();  
+      } else {
+          console.log('No user is signed in.');
+          document.getElementById('favorites-container').innerHTML = '<p>You need to be signed in to see your favorites.</p>';
+      }
+  });
 </script>

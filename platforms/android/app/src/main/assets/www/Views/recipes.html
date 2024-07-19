@@ -1,7 +1,7 @@
 <div class="w-[90%] m-auto mt-12 gap-5 flex flex-col categories-section">
   <div class="w-[90%] m-auto flex bg-fcs3 p-3 gap-4 rounded-lg">
     <img src="Public/img/search.svg" alt="">
-    <input type="text" class="bg-fcs3 w-full outline-none" name="" id="" placeholder="Start"  onclick="hideNavBar()">
+    <input type="text" class="bg-fcs3 w-full outline-none" name="" id="" placeholder="Start"  onclick="hideNavBar()" onblur="showNavBar()">
   </div>
 
   <div class=" flex flex-col gap-3">
@@ -160,7 +160,6 @@ function displayAllRecipes(recipes) {
 
   container.innerHTML = allRecipesHTML;
 
-  // Add click event listeners to recipe cards
   document.querySelectorAll('.recipe-card').forEach(card => {
     card.addEventListener('click', function() {
       const index = this.getAttribute('data-index');
@@ -183,12 +182,10 @@ function showRecipeDetails(recipe) {
     document.getElementById('recipeIngredients').innerHTML = ingredientLines.map(ingredient => `<li>${ingredient}</li>`).join('');
     document.getElementById('recipeHealthLabel').innerText = healthLabels[0] || 'Recipe';
 
-    // Mostrar vista de detalles y ocultar sección de categorías y contenedor de recetas
     document.querySelector('.details-view').classList.remove('hidden');
     document.querySelector('.recipes-container').classList.add('hidden');
     document.querySelector('.categories-section').classList.add('hidden');
 
-    // Verificar si la receta ya está en favoritos
     checkIfRecipeIsFavorite(label);
     hideNavBar(); 
   }
@@ -206,7 +203,6 @@ function showRecipeDetails(recipe) {
 
     }
 
-    // Show the recipes container and categories section
     container.classList.remove('hidden');
     categoriesSection.classList.remove('hidden');
 
@@ -230,8 +226,6 @@ document.querySelector('.back-button').addEventListener('click', function() {
 
   });
 
-
-  // Función para agregar o eliminar receta de favoritos
   document.getElementById('heartButton').addEventListener('click', function() {
     const heartButton = this;
     const recipe = {
@@ -251,7 +245,6 @@ document.querySelector('.back-button').addEventListener('click', function() {
       favoritesRef.where('label', '==', recipe.label).get()
         .then(querySnapshot => {
           if (querySnapshot.empty) {
-            // La receta no está en favoritos, añadirla
             favoritesRef.add(recipe)
               .then(() => {
                 console.log('Recipe added to favorites');
@@ -281,7 +274,6 @@ document.querySelector('.back-button').addEventListener('click', function() {
     }
   });
 
-  // Función para verificar si la receta está en favoritos
   function checkIfRecipeIsFavorite(label) {
     const user = firebase.auth().currentUser;
     if (user) {
@@ -300,10 +292,6 @@ document.querySelector('.back-button').addEventListener('click', function() {
         });
     }
   }
-
-
-
-
 
 switchView('recipes-container');
 </script>

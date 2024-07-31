@@ -197,7 +197,7 @@
 
             if (result.isConfirmed) {
                 await auth.signOut();
-                clearViewContent(); // Clear current view content before loading new view
+                clearViewContent(); 
                 loadPartialView('home-app', document.querySelector('.init'), true);
             }
         } catch (error) {

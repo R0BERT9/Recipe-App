@@ -138,8 +138,14 @@
                     title: 'Success!',
                     text: 'Username updated successfully.',
                     icon: 'success',
+                    iconColor: '#FFC107',
                     confirmButtonText: 'OK',
+                    confirmButtonColor: '#4CAF50',
                     width: '300px',
+                    customClass: {
+                        title: 'text-xl',
+                        text: 'text-md',
+                    },
                 });
             }
             if (!passwordUpdate && !usernameUpdate) {
@@ -197,7 +203,7 @@
 
             if (result.isConfirmed) {
                 await auth.signOut();
-                clearViewContent(); // Clear current view content before loading new view
+                clearViewContent(); 
                 loadPartialView('home-app', document.querySelector('.init'), true);
             }
         } catch (error) {

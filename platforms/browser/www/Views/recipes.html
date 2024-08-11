@@ -1,25 +1,23 @@
 <div class="w-[90%] m-auto mt-12 gap-5 flex flex-col categories-section">
   <div class="w-[90%] m-auto flex bg-fcs3 p-3 gap-4 rounded-lg">
-    <img src="Public/img/search.svg" alt="">
-    <input type="text" class="bg-fcs3 w-full outline-none" name="" id="" placeholder="Start"  onclick="hideNavBar()" onblur="showNavBar()">
+    <img id="searchIcon" src="Public/img/search.svg" alt="Search">
+    <input type="text" id="recipeSearchInput" class="bg-fcs3 w-full outline-none" placeholder="Start" onclick="hideNavBar()" onblur="showNavBar()">
   </div>
 
-  <div class=" flex flex-col gap-3">
+  <div class="flex flex-col gap-3">
     <h2 class="font-semibold text-xl">Category</h2>
-
     <div class="overflow-x-auto scrollbar-hidden">
       <div class="flex gap-4">
         <button class="bg-fcp3 py-2 px-5 rounded-xl text-fcp1 text-sm font-semibold">All</button>
         <button class="bg-fcp3 py-2 px-5 rounded-xl text-fcp1 text-sm font-semibold">Lunch/Dinner</button>
         <button class="bg-fcp3 py-2 px-5 rounded-xl text-fcp1 text-sm font-semibold">Snack</button>
-        <button class="bg-fcp3 py-2 px-5 rounded-xl text-fcp1 text-sm font-semibold">Cerals</button>
+        <button class="bg-fcp3 py-2 px-5 rounded-xl text-fcp1 text-sm font-semibold">Cereals</button>
         <button class="bg-fcp3 py-2 px-5 rounded-xl text-fcp1 text-sm font-semibold">Desserts</button>
         <button class="bg-fcp3 py-2 px-5 rounded-xl text-fcp1 text-sm font-semibold">Seafood</button>
       </div>
     </div>
   </div>
-
-
+  
   <div class="flex flex-col gap-3">
     <h2 class="font-semibold text-lg">Recipes</h2>
 
@@ -81,217 +79,476 @@
   </div>
 </div>
 
+
+
 <script>
+  (function() {
+  let allrecipesCache = null;
+
   function fetchAllRecipes() {
-  if (allrecipesCache) {
-    displayAllRecipes(allrecipesCache);
-    return;
-  }
-
-  Swal.fire({
-    title: 'Loading Recipes...',
-    width: '250px',
-    color: '#000',
-    customClass: {
-      title: 'text-xl',
-      loader: 'border-y-[#4CAF50] border-x-transparent'
-    },
-    didOpen: () => {
-      Swal.showLoading();
-    }
-  });
-
-  const query = 'popular';
-  const url = `https://api.edamam.com/search?q=${query}&app_id=${appId}&app_key=${appKey}&from=0&to=100`;
-
-  fetch(url)
-    .then(response => response.json())
-    .then(data => {
-      console.log('Data fetched:', data);
-      allrecipesCache = data.hits;
-      Swal.close();
-      displayAllRecipes(allrecipesCache);
-    })
-    .catch(error => {
-      console.error('Error fetching recipes:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'There was an error fetching the recipes. Please try again later.'
-      });
-    });
-}
-
-function displayAllRecipes(recipes) {
-  const container = document.querySelector('.recipes-container');
-
-  if (!container) {
-    console.error('Container with class "recipes-container" not found.');
-    return;
-  }
-
-  let allRecipesHTML = '';
-
-  recipes.forEach((recipe, index) => {
-    const { label, image, calories, ingredientLines, healthLabels } = recipe.recipe;
-
-    const cardHTML = `
-      <div class="flex rounded-xl bg-fcp1 p-3 gap-3 w-full recipe-card" data-index="${index}">
-        <div class="w-[35%]">
-          <img class="rounded-xl object-cover w-full" src="${image}" alt="${label}">
-        </div>
-        <div class="flex flex-col gap-2 w-[75%]">
-          <p class="font-medium">${label}</p>
-          <div class="flex justify-between text-sm font-medium">
-            <p>${Math.round(calories)} Cal</p>
-            <div class="flex gap-1">
-              <p>${ingredientLines.length} Ingredients</p>
-            </div>
-          </div>
-          <div>
-            <button class="text-fcp1 bg-fcp2 rounded-2xl py-2 px-3 text-sm font-semibold">${healthLabels[0] || 'Recipe'}</button>
-          </div>
-        </div>
-      </div>
-    `;
-
-    allRecipesHTML += cardHTML;
-  });
-
-  container.innerHTML = allRecipesHTML;
-
-  document.querySelectorAll('.recipe-card').forEach(card => {
-    card.addEventListener('click', function() {
-      const index = this.getAttribute('data-index');
-      showRecipeDetails(allrecipesCache[index].recipe);
-    });
-  });
-}
-
-function showRecipeDetails(recipe) {
-    const { label, image, calories, ingredientLines, healthLabels, description, totalNutrients } = recipe;
-
-    document.getElementById('recipeImage').src = image;
-    document.getElementById('recipeImage').alt = label;
-    document.getElementById('recipeTitle').innerText = label;
-    document.getElementById('recipeDescription').innerText = description || '';
-    document.getElementById('recipeCalories').innerText = Math.round(calories);
-    document.getElementById('recipeFat').innerText = totalNutrients.FAT ? Math.round(totalNutrients.FAT.quantity) + 'g' : 'N/A';
-    document.getElementById('recipeCarbs').innerText = totalNutrients.CHOCDF ? Math.round(totalNutrients.CHOCDF.quantity) + 'g' : 'N/A';
-    document.getElementById('recipeProtein').innerText = totalNutrients.PROCNT ? Math.round(totalNutrients.PROCNT.quantity) + 'g' : 'N/A';
-    document.getElementById('recipeIngredients').innerHTML = ingredientLines.map(ingredient => `<li>${ingredient}</li>`).join('');
-    document.getElementById('recipeHealthLabel').innerText = healthLabels[0] || 'Recipe';
-
-    document.querySelector('.details-view').classList.remove('hidden');
-    document.querySelector('.recipes-container').classList.add('hidden');
-    document.querySelector('.categories-section').classList.add('hidden');
-
-    checkIfRecipeIsFavorite(label);
-    hideNavBar(); 
-  }
-
-  function showAllRecipesView() {
-  const container = document.querySelector('.recipes-container');
-  const categoriesSection = document.querySelector('.categories-section');
-  
-  if (container) {
     if (allrecipesCache) {
       displayAllRecipes(allrecipesCache);
-
-    } else {
-      fetchAllRecipes();
-
+      return;
     }
 
-    container.classList.remove('hidden');
-    categoriesSection.classList.remove('hidden');
+    Swal.fire({
+      title: 'Loading Recipes...',
+      width: '250px',
+      color: '#000',
+      customClass: {
+        title: 'text-xl',
+        loader: 'border-y-[#4CAF50] border-x-transparent'
+      },
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
 
+    const query = 'popular';
+    const url = `https://api.edamam.com/search?q=${query}&app_id=${appId}&app_key=${appKey}&from=0&to=100`;
+
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        allrecipesCache = data.hits;
+        localStorage.setItem('allrecipesCache', JSON.stringify(allrecipesCache));
+        Swal.close();
+        displayAllRecipes(allrecipesCache);
+      })
+      .catch(error => {
+        console.error('Error fetching recipes:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'There was an error fetching the recipes. Please try again later.'
+        });
+      });
   }
 
-}
+  function displayAllRecipes(recipes) {
+    const container = document.querySelector('.recipes-container');
 
-function switchView(viewName) {
-  if (viewName === 'recipes-container') {
-    showAllRecipesView();
-  } else {
-    document.querySelector('.init').innerHTML = '';
+    if (!container) {
+      console.error('Container with class "recipes-container" not found.');
+      return;
+    }
+
+    let allRecipesHTML = '';
+
+    recipes.forEach((recipe, index) => {
+      const { label, image, calories, ingredientLines, healthLabels } = recipe.recipe;
+
+      const cardHTML = `
+        <div class="flex rounded-xl bg-fcp1 p-3 gap-3 w-full recipe-card" data-index="${index}">
+          <div class="w-[35%]">
+            <img class="rounded-xl object-cover w-full" src="${image}" alt="${label}">
+          </div>
+          <div class="flex flex-col gap-2 w-[75%]">
+            <p class="font-medium">${label}</p>
+            <div class="flex justify-between text-sm font-medium">
+              <p>${Math.round(calories)} Cal</p>
+              <div class="flex gap-1">
+                <p>${ingredientLines.length} Ingredients</p>
+              </div>
+            </div>
+            <div>
+              <button class="text-fcp1 bg-fcp2 rounded-2xl py-2 px-3 text-sm font-semibold">${healthLabels[0] || 'Recipe'}</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      allRecipesHTML += cardHTML;
+    });
+
+    container.innerHTML = allRecipesHTML;
+
+    document.querySelectorAll('.recipe-card').forEach(card => {
+      card.addEventListener('click', function() {
+        const index = this.getAttribute('data-index');
+        showRecipeDetails(allrecipesCache[index].recipe);
+      });
+    });
   }
-}
 
-document.querySelector('.back-button').addEventListener('click', function() {
-    document.querySelector('.details-view').classList.add('hidden');
-    document.querySelector('.recipes-container').classList.remove('hidden');
-    document.querySelector('.categories-section').classList.remove('hidden');
-    showNavBar();
+  function showRecipeDetails(recipe) {
+      const { label, image, calories, ingredientLines, healthLabels, description, totalNutrients } = recipe;
 
-  });
+      document.getElementById('recipeImage').src = image;
+      document.getElementById('recipeImage').alt = label;
+      document.getElementById('recipeTitle').innerText = label;
+      document.getElementById('recipeDescription').innerText = description || '';
+      document.getElementById('recipeCalories').innerText = Math.round(calories);
+      document.getElementById('recipeFat').innerText = totalNutrients.FAT ? Math.round(totalNutrients.FAT.quantity) + 'g' : 'N/A';
+      document.getElementById('recipeCarbs').innerText = totalNutrients.CHOCDF ? Math.round(totalNutrients.CHOCDF.quantity) + 'g' : 'N/A';
+      document.getElementById('recipeProtein').innerText = totalNutrients.PROCNT ? Math.round(totalNutrients.PROCNT.quantity) + 'g' : 'N/A';
+      document.getElementById('recipeIngredients').innerHTML = ingredientLines.map(ingredient => `<li>${ingredient}</li>`).join('');
+      document.getElementById('recipeHealthLabel').innerText = healthLabels[0] || 'Recipe';
 
-  document.getElementById('heartButton').addEventListener('click', function() {
-    const heartButton = this;
-    const recipe = {
-      label: document.getElementById('recipeTitle').innerText,
-      image: document.getElementById('recipeImage').src,
-      calories: document.getElementById('recipeCalories').innerText,
-      fat: document.getElementById('recipeFat').innerText,
-      carbs: document.getElementById('recipeCarbs').innerText,
-      protein: document.getElementById('recipeProtein').innerText,
-      ingredients: Array.from(document.getElementById('recipeIngredients').children).map(li => li.innerText),
-      healthLabel: document.getElementById('recipeHealthLabel').innerText // Agregar healthLabel
-    };
+      document.querySelector('.details-view').classList.remove('hidden');
+      document.querySelector('.recipes-container').classList.add('hidden');
+      document.querySelector('.categories-section').classList.add('hidden');
 
-    const user = firebase.auth().currentUser;
-    if (user) {
-      const favoritesRef = db.collection('users').doc(user.uid).collection('favorites');
-      favoritesRef.where('label', '==', recipe.label).get()
-        .then(querySnapshot => {
-          if (querySnapshot.empty) {
-            favoritesRef.add(recipe)
-              .then(() => {
-                console.log('Recipe added to favorites');
-                heartButton.classList.add('text-[#4CAF50]'); // Cambiar color del corazón
-              })
-              .catch(error => {
-                console.error('Error adding recipe to favorites: ', error);
-              });
-          } else {
-            querySnapshot.forEach(doc => {
-              doc.ref.delete()
+      checkIfRecipeIsFavorite(label);
+      hideNavBar(); 
+    }
+
+    function showAllRecipesView() {
+      const container = document.querySelector('.recipes-container');
+      const categoriesSection = document.querySelector('.categories-section');
+      
+      if (container) {
+        if (allrecipesCache) {
+          displayAllRecipes(allrecipesCache);
+        } else {
+          fetchAllRecipes();
+        }
+
+        container.classList.remove('hidden');
+        categoriesSection.classList.remove('hidden');
+      }
+    }
+
+    function switchView(viewName) {
+      if (viewName === 'recipes-container') {
+        showAllRecipesView();
+      } else {
+        document.querySelector('.init').innerHTML = '';
+      }
+    }
+
+    document.querySelector('.back-button').addEventListener('click', function() {
+      document.querySelector('.details-view').classList.add('hidden');
+      document.querySelector('.recipes-container').classList.remove('hidden');
+      document.querySelector('.categories-section').classList.remove('hidden');
+      showNavBar();
+    });
+
+    document.getElementById('heartButton').addEventListener('click', function() {
+      const heartButton = this;
+      const recipe = {
+        label: document.getElementById('recipeTitle').innerText,
+        image: document.getElementById('recipeImage').src,
+        calories: document.getElementById('recipeCalories').innerText,
+        fat: document.getElementById('recipeFat').innerText,
+        carbs: document.getElementById('recipeCarbs').innerText,
+        protein: document.getElementById('recipeProtein').innerText,
+        ingredients: Array.from(document.getElementById('recipeIngredients').children).map(li => li.innerText),
+        healthLabel: document.getElementById('recipeHealthLabel').innerText
+      };
+
+      const user = firebase.auth().currentUser;
+      if (user) {
+        const favoritesRef = db.collection('users').doc(user.uid).collection('favorites');
+        favoritesRef.where('label', '==', recipe.label).get()
+          .then(querySnapshot => {
+            if (querySnapshot.empty) {
+              favoritesRef.add(recipe)
                 .then(() => {
-                  console.log('Recipe removed from favorites');
-                  heartButton.classList.remove('text-[#4CAF50]'); // Cambiar color del corazón
+                  console.log('Recipe added to favorites');
+                  heartButton.classList.add('text-[#4CAF50]');
                 })
                 .catch(error => {
-                  console.error('Error removing recipe from favorites: ', error);
+                  console.error('Error adding recipe to favorites: ', error);
                 });
-            });
-          }
-        })
-        .catch(error => {
-          console.error('Error checking if recipe is in favorites: ', error);
-        });
-    } else {
-      alert('You must be signed in to add favorites');
+            } else {
+              querySnapshot.forEach(doc => {
+                doc.ref.delete()
+                  .then(() => {
+                    console.log('Recipe removed from favorites');
+                    heartButton.classList.remove('text-[#4CAF50]');
+                  })
+                  .catch(error => {
+                    console.error('Error removing recipe from favorites: ', error);
+                  });
+              });
+            }
+          })
+          .catch(error => {
+            console.error('Error checking if recipe is in favorites: ', error);
+          });
+      } else {
+        alert('You must be signed in to add favorites');
+      }
+    });
+
+    function checkIfRecipeIsFavorite(label) {
+      const user = firebase.auth().currentUser;
+      if (user) {
+        const favoritesRef = db.collection('users').doc(user.uid).collection('favorites');
+        favoritesRef.where('label', '==', label).get()
+          .then(querySnapshot => {
+            const heartButton = document.getElementById('heartButton');
+            if (!querySnapshot.empty) {
+              heartButton.classList.add('text-[#4CAF50]');
+            } else {
+              heartButton.classList.remove('text-[#4CAF50]');
+            }
+          })
+          .catch(error => {
+            console.error('Error checking if recipe is in favorites: ', error);
+          });
+      }
     }
+
+    document.querySelectorAll('.categories-section button').forEach(button => {
+      button.addEventListener('click', function(event) {
+        const category = event.target.innerText;
+        fetchRecipesByCategory(category);
+      });
+    });
+
+
+
+  function fetchRecipesByCategory(category) {
+    Swal.fire({
+      title: 'Loading Recipes...',
+      width: '250px',
+      color: '#000',
+      customClass: {
+        title: 'text-xl',
+        loader: 'border-y-[#4CAF50] border-x-transparent'
+      },
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    const query = category.toLowerCase();
+    const url = `https://api.edamam.com/search?q=${query}&app_id=${appId}&app_key=${appKey}&from=0&to=100`;
+
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        localStorage.setItem('selectedCategory', category);
+        displayRecipesByCategory(data.hits);
+        Swal.close();
+      })
+      .catch(error => {
+        console.error('Error fetching recipes:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'There was an error fetching the recipes. Please try again later.'
+        });
+      });
+  }
+
+  function displayRecipesByCategory(recipes) {
+    const container = document.querySelector('.recipes-container');
+
+    if (!container) {
+      console.error('Container with class "recipes-container" not found.');
+      return;
+    }
+
+    let categoryRecipesHTML = '';
+
+    recipes.forEach((recipe, index) => {
+      const { label, image, calories, ingredientLines, healthLabels } = recipe.recipe;
+
+      const cardHTML = `
+        <div class="flex rounded-xl bg-fcp1 p-3 gap-3 w-full recipe-card" data-index="${index}">
+          <div class="w-[35%]">
+            <img class="rounded-xl object-cover w-full" src="${image}" alt="${label}">
+          </div>
+          <div class="flex flex-col gap-2 w-[75%]">
+            <p class="font-medium">${label}</p>
+            <div class="flex justify-between text-sm font-medium">
+              <p>${Math.round(calories)} Cal</p>
+              <div class="flex gap-1">
+                <p>${ingredientLines.length} Ingredients</p>
+              </div>
+            </div>
+            <div>
+              <button class="text-fcp1 bg-fcp2 rounded-2xl py-2 px-3 text-sm font-semibold">${healthLabels[0] || 'Recipe'}</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      categoryRecipesHTML += cardHTML;
+    });
+
+    container.innerHTML = categoryRecipesHTML;
+
+    document.querySelectorAll('.recipe-card').forEach(card => {
+      card.addEventListener('click', function() {
+        const index = this.getAttribute('data-index');
+        showRecipeDetails(recipes[index].recipe);
+      });
+    });
+  }
+
+  document.querySelectorAll('.categories-section button').forEach(button => {
+    button.addEventListener('click', function(event) {
+      const category = event.target.innerText;
+      fetchRecipesByCategory(category);
+    });
   });
 
-  function checkIfRecipeIsFavorite(label) {
-    const user = firebase.auth().currentUser;
-    if (user) {
-      const favoritesRef = db.collection('users').doc(user.uid).collection('favorites');
-      favoritesRef.where('label', '==', label).get()
-        .then(querySnapshot => {
-          const heartButton = document.getElementById('heartButton');
-          if (!querySnapshot.empty) {
-            heartButton.classList.add('text-[#4CAF50]'); // Corazón lleno
-          } else {
-            heartButton.classList.remove('text-[#4CAF50]'); // Corazón vacío
-          }
-        })
-        .catch(error => {
-          console.error('Error checking if recipe is in favorites: ', error);
-        });
+  function showAllRecipesView() {
+    const selectedCategory = localStorage.getItem('selectedCategory');
+
+    if (selectedCategory) {
+      fetchRecipesByCategory(selectedCategory);
+    } else {
+      fetchAllRecipes();
     }
   }
 
-switchView('recipes-container');
+  showAllRecipesView();
+
+})();
+
+</script>
+
+
+<script>
+  (function() {
+
+    let searchResultsCache = null;
+
+    // Function to fetch recipes from Edamam API based on search query
+    function fetchSearchResults(query) {
+      if (!query.trim()) return;
+
+      Swal.fire({
+        title: 'Searching Recipes...',
+        width: '250px',
+        color: '#000',
+        customClass: {
+          title: 'text-xl',
+          loader: 'border-y-[#4CAF50] border-x-transparent'
+        },
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      const url = `https://api.edamam.com/search?q=${query}&app_id=${appId}&app_key=${appKey}&from=0&to=100`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          searchResultsCache = data.hits;
+          Swal.close();
+          displaySearchResults(searchResultsCache);
+        })
+        .catch(error => {
+          console.error('Error searching recipes:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'There was an error searching for recipes. Please try again later.'
+          });
+        });
+    }
+
+    // Function to display search results
+    function displaySearchResults(recipes) {
+      const container = document.querySelector('.recipes-container');
+
+      if (!container) {
+        console.error('Container with class "recipes-container" not found.');
+        return;
+      }
+
+      let searchResultsHTML = '';
+
+      recipes.forEach((recipe, index) => {
+        const { label, image, calories, ingredientLines, healthLabels } = recipe.recipe;
+
+        const cardHTML = `
+          <div class="flex rounded-xl bg-fcp1 p-3 gap-3 w-full recipe-card" data-index="${index}">
+            <div class="w-[35%]">
+              <img class="rounded-xl object-cover w-full" src="${image}" alt="${label}">
+            </div>
+            <div class="flex flex-col gap-2 w-[75%]">
+              <p class="font-medium">${label}</p>
+              <div class="flex justify-between text-sm font-medium">
+                <p>${Math.round(calories)} Cal</p>
+                <div class="flex gap-1">
+                  <p>${ingredientLines.length} Ingredients</p>
+                </div>
+              </div>
+              <div>
+                <button class="text-fcp1 bg-fcp2 rounded-2xl py-2 px-3 text-sm font-semibold">${healthLabels[0] || 'Recipe'}</button>
+              </div>
+            </div>
+          </div>
+        `;
+
+        searchResultsHTML += cardHTML;
+      });
+
+      container.innerHTML = searchResultsHTML;
+
+      document.querySelectorAll('.recipe-card').forEach(card => {
+        card.addEventListener('click', function() {
+          const index = this.getAttribute('data-index');
+          showRecipeDetails(searchResultsCache[index].recipe);
+        });
+      });
+    }
+
+    // Function to show recipe details
+    function showRecipeDetails(recipe) {
+      const { label, image, calories, ingredientLines, healthLabels, description, totalNutrients } = recipe;
+
+      document.getElementById('recipeImage').src = image;
+      document.getElementById('recipeImage').alt = label;
+      document.getElementById('recipeTitle').innerText = label;
+      document.getElementById('recipeDescription').innerText = description || '';
+      document.getElementById('recipeCalories').innerText = Math.round(calories);
+      document.getElementById('recipeFat').innerText = totalNutrients.FAT ? Math.round(totalNutrients.FAT.quantity) + 'g' : 'N/A';
+      document.getElementById('recipeCarbs').innerText = totalNutrients.CHOCDF ? Math.round(totalNutrients.CHOCDF.quantity) + 'g' : 'N/A';
+      document.getElementById('recipeProtein').innerText = totalNutrients.PROCNT ? Math.round(totalNutrients.PROCNT.quantity) + 'g' : 'N/A';
+      document.getElementById('recipeIngredients').innerHTML = ingredientLines.map(ingredient => `<li>${ingredient}</li>`).join('');
+      document.getElementById('recipeHealthLabel').innerText = healthLabels[0] || 'Recipe';
+
+      document.querySelector('.details-view').classList.remove('hidden');
+      document.querySelector('.recipes-container').classList.add('hidden');
+      document.querySelector('.categories-section').classList.add('hidden');
+
+      checkIfRecipeIsFavorite(label);
+      hideNavBar();
+    }
+
+    // Function to check if a recipe is a favorite
+    function checkIfRecipeIsFavorite(label) {
+      const user = firebase.auth().currentUser;
+      if (user) {
+        const favoritesRef = db.collection('users').doc(user.uid).collection('favorites');
+        favoritesRef.where('label', '==', label).get()
+          .then(querySnapshot => {
+            const heartButton = document.getElementById('heartButton');
+            if (!querySnapshot.empty) {
+              heartButton.classList.add('text-[#4CAF50]');
+            } else {
+              heartButton.classList.remove('text-[#4CAF50]');
+            }
+          })
+          .catch(error => {
+            console.error('Error checking if recipe is in favorites: ', error);
+          });
+      }
+    }
+
+    // Event listener for search icon click
+    document.getElementById('searchIcon').addEventListener('click', function() {
+      const searchQuery = document.getElementById('recipeSearchInput').value;
+      fetchSearchResults(searchQuery);
+    });
+
+    // Event listener for Enter key in search input
+    document.getElementById('recipeSearchInput').addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        const searchQuery = this.value;
+        fetchSearchResults(searchQuery);
+      }
+    });
+
+  })();
 </script>

@@ -124,6 +124,7 @@
       showNavBar();
   });
 
+ 
   async function fetchFavorites() {
       const user = auth.currentUser;
       if (!user) {
@@ -192,6 +193,7 @@
       console.error('Error fetching favorite recipes:', error);
   }
   }
+
 
   async function removeFavorite(recipeId) {
       const user = auth.currentUser;
